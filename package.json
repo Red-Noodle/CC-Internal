@@ -2,16 +2,17 @@
   "name": "cultivatingcoders",
   "version": "1.0.0",
   "description": "the database and admin dashboard for Cultivating Coders",
-  "main": "index.js",
+  "main": "app.js",
   "dependencies": {
+    "@coreui/coreui": "^2.1.16",
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
-    "passport-local": "^1.0.0",
-    "passport": "^0.4.0"
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {},
   "scripts": {
