@@ -11,3 +11,19 @@ const cohortSchema = new Schema({
     students: [Student],
     instructors: [Instructors]
 });
+
+const Cohort = mongoose.model("Cohort", cohortSchema);
+
+var findCohortsByName = function (cohorttName, done) {
+    Person.find({ name: cohortName }, (err, data) => {
+        if (err) return console.log(err);
+        done(null, data);
+    });
+};
+
+var findStudentById = function (cohorttId, done) {
+    Person.findById(cohortId, (err, data) => {
+        if (err) return console.log(err);
+        done(null, data);
+    });
+};
