@@ -1,13 +1,13 @@
 const mongoose = requrie('mongoose');
 const Schema = mongoose.Schema;
-const Cohort = requrie('./Cohort.js')
+const Cohort = requrie('./Cohort')
 
 const studentSchema = new Schema({
     name: {type: String, required: true},
     email: {type: String, required: true},
-    address: String,
-    phone: String,
-    cohortName: Cohort
+    address: {type: String, default: ""},
+    phone: {type: String, default: ""},
+    cohortName: {type: CohortModel, required: true}
 });
 
 const Student = mongoose.model("Student", studentSchema); 
@@ -25,3 +25,7 @@ var findStudentById = function (studentId, done) {
         done(null, data);
     });
 };
+
+module.exports.StudentModel = Student;
+module.exports.findStudentById = findStudentById;
+module.exports.findStudentsByName = findStudentsByName;
