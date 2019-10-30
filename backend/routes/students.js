@@ -8,7 +8,7 @@ router.get('/login', (req, res) => {
 
 //Login Page
 router.get('/register', (req, res) => {
-    res.send("student login");
+    res.send("student registerS");
 });
 
 module.exports = router;
