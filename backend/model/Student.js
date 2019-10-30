@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 const Cohort = requrie('./Cohort')
 
 const studentSchema = new Schema({
-    name: {type: String, required: true},
-    email: {type: String, required: true},
-    address: {type: String, default: ""},
-    phone: {type: String, default: ""},
+    name: {type: String, trim: true, required: true},
+    email: {type: String, trim: true, required: true},
+    address: {type: String, trim: true, default: ""},
+    phone: {type: String,trim: true, default: ""},
     cohortName: {type: CohortModel, required: true}
 });
 

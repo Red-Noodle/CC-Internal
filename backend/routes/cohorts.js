@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/', (req, res) => {
-    res.send("welcome");
+//Create Page
+router.get('/log', (req, res) => {
+    res.send("cohort creation page");
 });
 
 module.exports = router;

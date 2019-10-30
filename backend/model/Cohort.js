@@ -5,11 +5,11 @@ const Students = require('./Student');
 const Instructors = require('./Instructor');
 
 const cohortSchema = new Schema({
-    name: {type: String, required: true},
-    dateStart: {type: String, required: true},
-    dateEnd: {type: String, required: true},
-    students: [Student],
-    instructors: [Instructors]
+    name: { type: String, trim: true, required: true},
+    dateStart: { type: String, trim: true, required: true},
+    dateEnd: { type: String, trim: true, required: true},
+    students: [Student.model],
+    instructors: [Instructor.model]
 });
 
 const Cohort = mongoose.model("Cohort", cohortSchema);
