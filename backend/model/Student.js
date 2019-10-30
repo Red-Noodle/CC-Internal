@@ -27,6 +27,6 @@ var findStudentById = function (studentId, done) {
     });
 };
 
-module.exports.StudentModel = Student;
+module.exports = Student;
 module.exports.findStudentById = findStudentById;
 module.exports.findStudentsByName = findStudentsByName;

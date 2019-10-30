@@ -27,6 +27,6 @@ var findInstructorsById = function (instructorId, done) {
     });
 };
 
-module.exports.InstructorModel = Instructor;
+module.exports = Instructor;
 module.exports.findInstructorsByName = findInstructorsByName;
 module.exports.findInstructorsById = findInstructorsById;

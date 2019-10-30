@@ -28,6 +28,6 @@ var findCohortById = function (cohorttId, done) {
     });
 };
 
-module.exports.CohortModel = Cohort;
+module.exports = Cohort;
 module.exports.findCohortsByName = findCohortsByName;
 module.exports.findCohortById = findCohortById;
