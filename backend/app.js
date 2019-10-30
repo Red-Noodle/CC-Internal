@@ -8,5 +8,12 @@ const passport = require('passport');
 const Strategy = require('passport-local').Stretegy;
 const session = require('express-session');
 const flash = require('connect-flash');
+const mongoose = require('mongoose');
 
-const db = MongoClient.connect('mongodb://localhost');
+mongoose.connect('mongodv://localhost', (err, client) => {
+    if(err) throw err;
+    const db = client.db('cultivating coders');
+    const users = db.collection('users');
+    const instructors = db.collection('instructors');
+    const cohorts = db.collections('cohorts');
+});
