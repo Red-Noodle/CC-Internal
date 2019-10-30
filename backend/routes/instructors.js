@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const Instructor = require('../models/Instructor');
+
 //Login Page
 router.get('/login', (req, res) => {
     res.send("instructor login");
@@ -17,7 +19,7 @@ router.post('/register', (req, res) => {
     const errors = [];
 
     //Check required fields
-    if (!name || !email || !password || !cohortName) {
+    if (!name || !email || !password) {
         errors.push({ msg: "Please fill in all of the required fields" });
     }
 

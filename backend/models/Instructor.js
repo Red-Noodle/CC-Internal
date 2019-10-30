@@ -8,7 +8,7 @@ const instructorSchema = new Schema({
     password: {type: String, trim: true, required: true},
     address: { type: String, trim: true, default: ""},
     phone: { type: String, trim: true, default: ""},
-    cohortName: {type: CohortModel, required: true}
+    cohortName: {type: Cohort}
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);

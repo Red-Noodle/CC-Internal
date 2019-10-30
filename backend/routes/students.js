@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
+const Student = require('../models/Student');
+
 //Login Page
 router.get('/login', (req, res) => {
     res.send("student login");
