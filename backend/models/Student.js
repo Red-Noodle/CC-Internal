@@ -20,6 +20,13 @@ var findStudentsByName = function (studentName, done) {
     });
 };
 
+var findStudentsByEmail = function (studentEmail, done) {
+    Person.find({ email: studentEmail }, (err, data) => {
+        if (err) return console.log(err);
+        done(null, data);
+    });
+};
+
 var findStudentById = function (studentId, done) {
     Person.findById(studentId, (err, data) => {
         if (err) return console.log(err);
