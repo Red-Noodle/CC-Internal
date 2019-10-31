@@ -17,10 +17,10 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const {name, email, password, address, phone, cohortName} = req.body;
+    const {firstName, lastName, email, password, address, phone, cohortName} = req.body;
 
     //Check required fields
-    if(!name || !email || !password) {
+    if(!firstName || !lastName || !email || !password) {
         alert("Please fill in all of the fields");
     }
 
@@ -30,7 +30,10 @@ router.post('/register', (req, res) => {
 
     //Create new Student
     const newStudent = new Student({
-        name: name,
+        name: {
+            firstName: firstName,
+            lastName: lastName
+        },
         email: email,
         password: password,
         address: address,
