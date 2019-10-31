@@ -1,27 +1,27 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const Students = require('./Student');
-const Instructors = require('./Instructor');
+const Student = require('./Student');
+const Instructor = require('./Instructor');
 
 const cohortSchema = new Schema({
     name: { type: String, trim: true, required: true},
     dateStart: { type: String, trim: true, required: true},
     dateEnd: { type: String, trim: true, required: true},
-    students: [Student],
-    instructors: [Instructor]
+    students: String,
+    instructors: String
 });
 
 const Cohort = mongoose.model("Cohort", cohortSchema);
 
-var findCohortsByName = function (cohorttName, done) {
+var findCohortsByName = function (cohortName, done) {
     Person.find({ name: cohortName }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
 };
 
-var findCohortById = function (cohorttId, done) {
+var findCohortById = function (cohortId, done) {
     Person.findById(cohortId, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
