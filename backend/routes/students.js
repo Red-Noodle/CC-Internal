@@ -18,16 +18,17 @@ router.get('/register', (req, res) => {
 //Handle Register
 router.post('/register', (req, res) => {
     const {name, email, password, address, phone, cohortName} = req.body;
-    const errors = [];
 
     //Check required fields
-    if(!name || !email || !password || !cohortName) {
-        errors.push({msg: "Please fill in all of the required fields"});
+    if(!name || !email || !password) {
+        alert("Please fill in all of the fields");
     }
 
     if(password.length < 6) {
-        errors.push({msg: "Password must be 6 characters long"});
+        alert("Password must be at least 6 characters in length");
     }
+
+    //Create new Student
     const newStudent = new Student({
         name: name,
         email: email,
@@ -43,7 +44,8 @@ router.post('/register', (req, res) => {
             if(err) throw err;
             newStudent.password = hash;
 
-            newStudent.save().then(user => res.send('success')).catch(err => console.log(err));
+            //Save new Student
+            newStudent.save().then(student => res.send('success')).catch(err => console.log(err));
         });
     });
 });

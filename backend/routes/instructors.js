@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const bcrypt = require('bcryptjs');
 
 const Instructor = require('../models/Instructor');
 
@@ -16,16 +17,38 @@ router.get('/register', (req, res) => {
 //Handle Register
 router.post('/register', (req, res) => {
     const { name, email, password, address, phone, cohortName } = req.body;
-    const errors = [];
 
     //Check required fields
     if (!name || !email || !password) {
-        errors.push({ msg: "Please fill in all of the required fields" });
+        alert("Please fill in all of the fields")
     }
 
+    //Check for password length
     if (password.length < 6) {
-        errors.push({ msg: "Password must be 6 characters long" });
+        alert("Password must be at least 6 characters in length");
     }
+
+    //Create new Instructor
+    const newInstructor = new Instructor({
+        name: name,
+        email: email,
+        password: password,
+        address: address,
+        phone: phone, 
+        cohortName: cohortName
+    });
+
+    //Hashing password
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(salt, (err, hash) => {
+            if(err) throw err;
+            newInstructor.password = hash;
+
+            //Saving new Instructor
+            newInstructor.save().then(instructor => res.send('success')).catch(console.log(err));
+        });
+    });
+
 });
 
 module.exports = router;

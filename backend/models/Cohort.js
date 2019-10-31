@@ -6,8 +6,8 @@ const Instructor = require('./Instructor');
 
 const cohortSchema = new Schema({
     name: { type: String, trim: true, required: true},
-    dateStart: { type: String, trim: true, required: true},
-    dateEnd: { type: String, trim: true, required: true},
+    dateStart: { type: String, trim: true},
+    dateEnd: { type: String, trim: true},
     students: String,
     instructors: String
 });
