@@ -10,6 +10,11 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 
+
+mongoose.connect('mongodb://localhost:27017//cc_admin', { useUnifiedTopology: true, useNewUrlParser: true })
+.then(() => console.log('DB connected...'))
+.catch((err) => {console.log(err)});
+
 //Routes
 app.use('/', require('./backend/routes/index'));
 app.use('/students', require('./backend/routes/students'));
