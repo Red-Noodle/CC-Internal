@@ -4,6 +4,11 @@ const bcrypt = require('bcryptjs');
 
 const Instructor = require('../models/Instructor');
 
+//Get all instructors
+router.get('/', (req, res) => {
+    res.send(Instructor.find());
+});
+
 //Login Page
 router.get('/login', (req, res) => {
     res.send("instructor login");
@@ -16,10 +21,10 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const { firstName, lastName, email, password, address, phone, cohortName } = req.body;
+    const { firstname, lastname, email, password, address, phone, cohortName } = req.body;
 
     //Check required fields
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstname || !lastname || !email || !password) {
         alert("Please fill in all of the fields")
     }
 
@@ -31,8 +36,8 @@ router.post('/register', (req, res) => {
     //Create new Instructor
     const newInstructor = new Instructor({
         name: {
-            firstName: firstName,
-            lastName: lastName
+            firstName: firstname,
+            lastName: lastname
         },
         email: email,
         password: password,

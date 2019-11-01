@@ -5,6 +5,11 @@ const bcrypt = require('bcryptjs');
 //Student Model
 const Student = require('../models/Student');
 
+//Get all studentss
+router.get('/', (req, res) => {
+    res.send(Student.find());
+});
+
 //Login Page
 router.get('/login', (req, res) => {
     res.send("student login");

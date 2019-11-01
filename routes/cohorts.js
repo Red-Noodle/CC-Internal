@@ -3,6 +3,10 @@ const router = express.Router();
 
 const Cohort = require('../models/Cohort');
 
+router.get('/', (req, res) => {
+    res.send(Cohort.find());
+});
+
 //Create Page
 router.get('/log', (req, res) => {
     res.send("cohort creation page");

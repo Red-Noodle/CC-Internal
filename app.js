@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-
+// DB connection
 mongoose.createConnection('mongodb://localhost/cc_admin', { useUnifiedTopology: true, useNewUrlParser: true })
 .then(() => console.log('DB connected...'))
 .catch((err) => {console.log(err)});
@@ -22,10 +22,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'html');
 
-//Express bodyparser
+// Express bodyparser
 app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 
-//Routes
+// Routes
 app.use('/', require('./routes/index'));
 app.use('/students', require('./routes/students'));
 app.use('/instructors', require('./routes/instructors'));
