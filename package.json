@@ -2,7 +2,7 @@
   "name": "cultivatingcoders",
   "version": "1.0.0",
   "description": "the database and admin dashboard for Cultivating Coders",
-  "main": "app.js",
+  "main": "./backend/app.js",
   "dependencies": {
     "@coreui/coreui": "^2.1.16",
     "bcryptjs": "^2.4.3",
