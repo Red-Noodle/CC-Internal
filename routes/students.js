@@ -12,27 +12,27 @@ router.get('/login', (req, res) => {
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.send("student register");
+    res.render('../views/register.html');
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const {firstName, lastName, email, password, address, phone, cohortName} = req.body;
+    const {firstname, lastname, email, password, address, phone, cohortName} = req.body;
 
     //Check required fields
-    if(!firstName || !lastName || !email || !password) {
-        alert("Please fill in all of the fields");
+    if(!firstname || !lastname || !email || !password) {
+        //alert("Please fill in all of the fields");
     }
 
     if(password.length < 6) {
-        alert("Password must be at least 6 characters in length");
+        //alert("Password must be at least 6 characters in length");
     }
 
     //Create new Student
     const newStudent = new Student({
         name: {
-            firstName: firstName,
-            lastName: lastName
+            firstName: firstname,
+            lastName: lastname
         },
         email: email,
         password: password,
@@ -49,8 +49,10 @@ router.post('/register', (req, res) => {
 
             //Save new Student
             newStudent.save().then(student => res.send('success')).catch(err => console.log(err));
+            console.log(newStudent);
         });
     });
+    res.send("hello");
 });
 
 module.exports = router;
