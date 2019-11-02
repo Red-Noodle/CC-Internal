@@ -42,8 +42,7 @@ router.post('/register', (req, res) => {
         email: email,
         password: password,
         address: address,
-        phone: phone, 
-        cohortName: cohortName
+        phone: phone
     });
 
     //Hashing password

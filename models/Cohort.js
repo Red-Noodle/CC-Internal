@@ -8,8 +8,8 @@ const cohortSchema = new Schema({
     name: { type: String, trim: true, required: true},
     dateStart: { type: String, trim: true},
     dateEnd: { type: String, trim: true},
-    students: String,
-    instructors: String
+    students: [{type: Schema.Types.ObjectId, ref: 'Student'}],
+    instructors: [{type: Schema.Types.ObjectId, ref: 'Instructor'}]
 });
 
 const Cohort = mongoose.model("Cohort", cohortSchema);
