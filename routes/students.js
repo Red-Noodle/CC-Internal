@@ -15,6 +15,11 @@ router.get('/login', (req, res) => {
     res.send("student login");
 });
 
+//Handle Login
+router.post('/login', (err, res) => {
+    
+});
+
 //Register Page
 router.get('/register', (req, res) => {
     res.render('../views/register.html');
