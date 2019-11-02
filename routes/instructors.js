@@ -49,14 +49,21 @@ router.post('/register', (req, res) => {
     //Hashing password
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(salt, (err, hash) => {
-            if(err) throw err;
+            if(err) {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            }
             newInstructor.password = hash;
 
             //Saving new Instructor
-            newInstructor.save().then(instructor => res.send('success')).catch(console.log(err));
+            newInstructor.save().then(student => res.status(200)).catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            });
         });
     });
-
 });
 
 module.exports = router;

@@ -53,11 +53,13 @@ router.post('/register', (req, res) => {
             newStudent.password = hash;
 
             //Save new Student
-            newStudent.save().then(student => res.send('success')).catch(err => console.log(err));
-            console.log(newStudent);
+            newStudent.save().then(student => res.status(200)).catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            });
         });
     });
-    res.send("hello");
 });
 
 module.exports = router;

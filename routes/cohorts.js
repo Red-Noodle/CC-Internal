@@ -18,7 +18,7 @@ router.post('/log', (req, res) => {
 
     //Check required fields
     if(!name) {
-        alert("Please fill in the required fields")
+        //alert("Please fill in the required fields")
     }
 
     //Creating a new Cohort
