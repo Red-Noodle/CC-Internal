@@ -2,21 +2,26 @@
   "name": "cultivatingcoders",
   "version": "1.0.0",
   "description": "the database and admin dashboard for Cultivating Coders",
-  "main": "app.js",
+  "main": "./backend/app.js",
   "dependencies": {
     "@coreui/coreui": "^2.1.16",
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
+    "ejs": "^2.7.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
     "mongodb": "^3.3.3",
     "mongoose": "^5.7.7",
     "passport": "^0.4.0",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^1.19.4"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "nodemon app.js"
   },
   "keywords": [
     "dev",
