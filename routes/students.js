@@ -27,22 +27,26 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const {firstname, lastname, email, address, phone, cohortName} = req.body;
-
+    const {firstName, lastName, email, address, phone, cohort} = req.body;
+    console.log(req.body);
     //Check required fields
-    if(!firstname || !lastname || !email) {
-        
+    if (!firstName || !lastName || !email) {
+        return res.status(500).send({
+            status: 500,
+            data: 'Please make sure name and email are filled out'
+        });
     }
 
     //Create new Student
     const newStudent = new Student({
         name: {
-            firstName: firstname,
-            lastName: lastname
+            firstName: firstName,
+            lastName: lastName
         },
         email: email,
         address: address,
-        phone: phone
+        phone: phone,
+        cohort: cohort
     });
 
     //Save new Student

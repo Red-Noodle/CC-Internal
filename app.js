@@ -27,6 +27,7 @@ app.use('/', require('./routes/index'));
 app.use('/students', require('./routes/students'));
 app.use('/instructors', require('./routes/instructors'));
 app.use('/cohorts', require('./routes/cohorts'));
+app.use('/admins', require('./routes/admins'));
 
 const PORT = process.env.PORT || 5000;
 

@@ -40,3 +40,4 @@ var findInstructorsById = function (instructorId, done) {
 module.exports = Instructor;
 module.exports.findInstructorsByName = findInstructorsByName;
 module.exports.findInstructorsById = findInstructorsById;
+module.exports.instructorEmail = findStudentsByEmail;
