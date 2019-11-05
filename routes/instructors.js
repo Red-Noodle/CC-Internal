@@ -45,7 +45,7 @@ router.post('/register', (req, res) => {
 
     //Saving Instructor
     newInstructor.save()
-    .then(instructor => res.status(200))
+    .then(instructor => res.sendStatus(200))
     .catch(err => {
         console.log(err);
         res.sendStatus(500);

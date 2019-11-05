@@ -31,7 +31,11 @@ router.post('/create', (req, res) => {
     });
 
     //Saving new Cohort
-    newCohort.save().then(cohort => res.send("success")).catch(console.log(err));
+    newCohort.save()
+    .then(cohort => res.sendStatus(200))
+    .catch(console.log(err));
+    res.sendStatus(500);
+    return;
 });
 
 module.exports = router;

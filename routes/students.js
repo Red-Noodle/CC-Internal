@@ -50,7 +50,8 @@ router.post('/register', (req, res) => {
     });
 
     //Save new Student
-    newStudent.save().then(student => res.status(200)).catch(err => {
+    newStudent.save().then(student => res.sendStatus(200))
+    .catch(err => {
         console.log(err);
         res.sendStatus(500);
         return;

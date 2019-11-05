@@ -20,24 +20,28 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const { firstname, lastname, email } = req.body;
+    const { firstName, lastName, email } = req.body;
 
     //Check required fields
     if (!firstname || !lastname || !email) {
+        return res.status(500).send({
+            status: 500,
+            data: 'Please make sure name and email are filled out'
+        });
     }
 
     //Create new Instructor
     const newAdmin = new Admin({
         name: {
-            firstName: firstname,
-            lastName: lastname
+            firstName: firstName,
+            lastName: lastName
         },
         email: email,
     });
 
     //Saving Instructor
     newAdmin.save()
-    .then(admin => res.status(200))
+    .then(admin => res.sendStatus(200))
     .catch(err => {
         console.log(err);
         res.sendStatus(500);
