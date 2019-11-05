@@ -9,30 +9,29 @@ const instructorSchema = new Schema({
         lastName: { type: String, trim: true, required: true }
     },
     email: { type: String, trim: true, required: true },
-    password: {type: String, trim: true, required: true},
     address: { type: String, trim: true, default: ""},
     phone: { type: String, trim: true, default: ""},
-    cohort: {type: Schema.Types.ObjectId, ref: 'Cohort'}
+    cohort: [{type: Schema.Types.ObjectId, ref: 'Cohort'}]
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);
 
 var findInstructorsByName = function (instructorName, done) {
-    Person.find({ name: instructorName }, (err, data) => {
+    Instructor.find({ name: instructorName }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
 };
 
 var findStudentsByEmail = function (instructorEmail, done) {
-    Person.find({ email: instructorEmail }, (err, data) => {
+    Instructor.find({ email: instructorEmail }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
 };
 
 var findInstructorsById = function (instructorId, done) {
-    Person.findById(instructorId, (err, data) => {
+    Instructor.findById(instructorId, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });

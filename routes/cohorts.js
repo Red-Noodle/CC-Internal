@@ -8,12 +8,12 @@ router.get('/', (req, res) => {
 });
 
 //Create Page
-router.get('/log', (req, res) => {
+router.get('/create', (req, res) => {
     res.send("cohort creation page");
 });
 
 //Handle Cohort Creation
-router.post('/log', (req, res) => {
+router.post('/create', (req, res) => {
     const {name, dateStart, dateEnd, students, instructors} = req.body;
 
     //Check required fields

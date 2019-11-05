@@ -27,15 +27,11 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const {firstname, lastname, email, password, address, phone, cohortName} = req.body;
+    const {firstname, lastname, email, address, phone, cohortName} = req.body;
 
     //Check required fields
-    if(!firstname || !lastname || !email || !password) {
-        //alert("Please fill in all of the fields");
-    }
-
-    if(password.length < 6) {
-        //alert("Password must be at least 6 characters in length");
+    if(!firstname || !lastname || !email) {
+        
     }
 
     //Create new Student
@@ -45,24 +41,15 @@ router.post('/register', (req, res) => {
             lastName: lastname
         },
         email: email,
-        password: password,
         address: address,
         phone: phone
     });
 
-    //Hash password
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newStudent.password, salt, (err, hash) => {
-            if(err) throw err;
-            newStudent.password = hash;
-
-            //Save new Student
-            newStudent.save().then(student => res.status(200)).catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            });
-        });
+    //Save new Student
+    newStudent.save().then(student => res.status(200)).catch(err => {
+        console.log(err);
+        res.sendStatus(500);
+        return;
     });
 });
 
