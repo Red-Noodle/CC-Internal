@@ -35,7 +35,15 @@ var findStudentById = function (studentId, done) {
     });
 };
 
+var findAllStudents = function (students, dont) {
+    Student.find({}, (err, data) => {
+        if (err) return console.log(err);
+        dont(null, data);
+    });
+}
+
 module.exports = Student;
 module.exports.findStudentById = findStudentById;
 module.exports.findStudentsByName = findStudentsByName;
 module.exports.findStudentsByEmail = findStudentsByEmail;
+module.exports.findAllStudents = findAllStudents;

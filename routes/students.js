@@ -7,7 +7,7 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-    res.send(Student.find());
+    
 });
 
 //Login Page
