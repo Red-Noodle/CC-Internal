@@ -1,11 +1,19 @@
 const express = require('express');
 const router = express.Router();
 
-const Instructor = require('../models/Admin');
+const Admin = require('../models/Admin');
 
 //Get all Admins
 router.get('/', (req, res) => {
-
+    if(!req.isAuthenticated()) {
+        res.redirect('admins/login');
+    }
+    Admin.find({}, (err, data) => {
+        if(err) {
+            throw err;
+        }
+        res.render(data);
+    });
 });
 
 //Login Page

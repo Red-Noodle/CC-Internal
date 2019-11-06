@@ -7,7 +7,15 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-    
+    if(!req.isAuthenticated()) {
+        res.redirect('admins/login');
+    }
+    Student.find({}, (err, data) => {
+        if(err) {
+            throw err;
+        }
+        res.render(data);
+    });
 });
 
 //Login Page
@@ -58,6 +66,7 @@ router.post('/register', (req, res) => {
     });
 });
 
+//Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
     res.redirect('students/login');

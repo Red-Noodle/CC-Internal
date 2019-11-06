@@ -4,7 +4,15 @@ const router = express.Router();
 const Cohort = require('../models/Cohort');
 
 router.get('/', (req, res) => {
-    res.send(Cohort.find());
+    if(!req.isAuthenticated()) {
+        res.redirect(admin/login);
+    }
+    Cohort.find({}, (err, data) => {
+        if (err) {
+            throw err;
+        }
+        res.render(data);
+    });
 });
 
 //Create Page
