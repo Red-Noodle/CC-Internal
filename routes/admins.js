@@ -3,9 +3,9 @@ const router = express.Router();
 
 const Instructor = require('../models/Admin');
 
-//Get all instructors
+//Get all Admins
 router.get('/', (req, res) => {
-    res.send(Admin.find());
+
 });
 
 //Login Page
@@ -30,7 +30,7 @@ router.post('/register', (req, res) => {
         });
     }
 
-    //Create new Instructor
+    //Create new Admin
     const newAdmin = new Admin({
         name: {
             firstName: firstName,
@@ -39,7 +39,7 @@ router.post('/register', (req, res) => {
         email: email,
     });
 
-    //Saving Instructor
+    //Saving Admin
     newAdmin.save()
     .then(admin => res.sendStatus(200))
     .catch(err => {
