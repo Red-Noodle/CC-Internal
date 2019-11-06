@@ -9,7 +9,8 @@ const studentSchema = new Schema({
     email: {type: String, trim: true, required: true},
     address: {type: String, trim: true, default: ""},
     phone: {type: String, trim: true, default: ""},
-    cohort: { type: Schema.Types.ObjectId, ref: 'Cohort' }
+    cohort: { type: Schema.Types.ObjectId, ref: 'Cohort' },
+    key: String
 });
 
 const Student = mongoose.model("Student", studentSchema); 
