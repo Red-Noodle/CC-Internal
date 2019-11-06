@@ -7,20 +7,17 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-    if(!req.isAuthenticated()) {
-        res.redirect('admins/login');
-    }
     Student.find({}, (err, data) => {
         if(err) {
-            throw err;
+            return;
         }
-        res.render(data);
+        res.json(...data);
     });
 });
 
 //Login Page
 router.get('/login', (req, res) => {
-    res.send("student login");
+    
 });
 
 //Handle Login

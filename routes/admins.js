@@ -1,16 +1,14 @@
 const express = require('express');
 const router = express.Router();
 
+//Admin Model
 const Admin = require('../models/Admin');
 
 //Get all Admins
 router.get('/', (req, res) => {
-    if(!req.isAuthenticated()) {
-        res.redirect('admins/login');
-    }
     Admin.find({}, (err, data) => {
         if(err) {
-            throw err;
+            return;
         }
         res.render(data);
     });
@@ -19,6 +17,11 @@ router.get('/', (req, res) => {
 //Login Page
 router.get('/login', (req, res) => {
     res.send("admin login");
+});
+
+//Handle Login
+router.post('/login', (req, res) => {
+
 });
 
 //Register Page
@@ -57,6 +60,7 @@ router.post('/register', (req, res) => {
     });
 });
 
+//Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
     res.redirect('admins/login');

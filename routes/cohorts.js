@@ -4,20 +4,17 @@ const router = express.Router();
 const Cohort = require('../models/Cohort');
 
 router.get('/', (req, res) => {
-    if(!req.isAuthenticated()) {
-        res.redirect(admin/login);
-    }
     Cohort.find({}, (err, data) => {
         if (err) {
-            throw err;
+            return;
         }
-        res.render(data);
+        res.json(...data);
     });
 });
 
 //Create Page
 router.get('/create', (req, res) => {
-    res.send("cohort creation page");
+    
 });
 
 //Handle Cohort Creation

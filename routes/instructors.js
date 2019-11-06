@@ -6,12 +6,9 @@ const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
-    if(!req.isAuthenticated()) {
-        res.redirect('admins/login');
-    }
     Instructor.find({}, (err, data) => {
         if(err) {
-            throw err;
+            return;
         }
         res.render(data);
     });
@@ -19,7 +16,7 @@ router.get('/', (req, res) => {
 
 //Login Page
 router.get('/login', (req, res) => {
-    res.send("instructor login");
+    
 });
 
 //Register Page
