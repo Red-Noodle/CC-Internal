@@ -6,7 +6,7 @@ const Cohort = require('../models/Cohort');
 router.get('/', (req, res) => {
     Cohort.find({}, (err, data) => {
         if (err) {
-            return;
+            return res.sendStatus(500);
         }
         res.json(...data);
     });

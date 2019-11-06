@@ -8,7 +8,7 @@ const Admin = require('../models/Admin');
 router.get('/', (req, res) => {
     Admin.find({}, (err, data) => {
         if(err) {
-            return;
+            return res.sendStatus(500);
         }
         res.render(data);
     });

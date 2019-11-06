@@ -9,7 +9,7 @@ const Student = require('../models/Student');
 router.get('/', (req, res) => {
     Student.find({}, (err, data) => {
         if(err) {
-            return;
+            return res.sendStatus(500);
         }
         res.json(...data);
     });

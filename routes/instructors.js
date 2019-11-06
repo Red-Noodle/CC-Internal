@@ -8,7 +8,7 @@ const Instructor = require('../models/Instructor');
 router.get('/', (req, res) => {
     Instructor.find({}, (err, data) => {
         if(err) {
-            return;
+            return res.sendStatus(500);
         }
         res.render(data);
     });
