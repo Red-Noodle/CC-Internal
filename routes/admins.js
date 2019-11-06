@@ -49,4 +49,9 @@ router.post('/register', (req, res) => {
     });
 });
 
+router.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('admins/login');
+});
+
 module.exports = router;

@@ -6,7 +6,7 @@ const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
-    res.send(Instructor.find());
+    
 });
 
 //Login Page
@@ -51,6 +51,11 @@ router.post('/register', (req, res) => {
         res.sendStatus(500);
         return;
     });
+});
+
+router.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('instructors/login');
 });
 
 module.exports = router;
