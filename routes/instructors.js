@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 
 const Instructor = require('../models/Instructor');
+const findInstructorsByEmail = require('../models/Instructor').findInstructorsByEmail;
 
 //Get all instructors
 router.get('/', (req, res) => {
@@ -26,7 +27,7 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const { firstName, lastName, email, address, phone, cohort } = req.body;
+    const { firstName, lastName, email, street, street2, city, state, zip, phone, cohort } = req.body;
 
     //Check required fields
     if (!firstName || !lastName || !email) {
@@ -42,19 +43,27 @@ router.post('/register', (req, res) => {
             lastName: lastName
         },
         email: email,
-        address: address,
+        address: {
+            street: street,
+            street2: street2,
+            city: city,
+            state: state,
+            zip: zip
+        },
         phone: phone,
         cohort: cohort
     });
 
-    //Saving Instructor
+    
+     //Saving Instructor
     newInstructor.save()
     .then(instructor => res.status(200).send({flash: 'Account created'}))
     .catch(err => {
         console.log(err);
         res.sendStatus(500);
-        return;
+         return;
     });
+    
 });
 
 //Handle Logout

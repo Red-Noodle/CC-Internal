@@ -54,21 +54,15 @@ router.post('/register', (req, res) => {
         cohort: cohort
     });
 
-    Student.findOne({email: email}, (err, data) => {
-        if(err) {
-            return res.status(500).send({flash: 'there was an error'});
-        }
-        if(newStudent.email == data.email) {
-            return res.status(500).send({ flash: 'this email already exists' });
-        }
-        //Save new Student
-        newStudent.save().then(student => res.sendStatus(200))
-            .catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            });
-    });
+    
+    //Save new Student
+     newStudent.save().then(student => res.sendStatus(200))
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+            return;
+        });
+
 
     
 });
