@@ -4,16 +4,21 @@ const router = express.Router();
 const Cohort = require('../models/Cohort');
 
 router.get('/', (req, res) => {
-    res.send(Cohort.find());
+    Cohort.find({}, (err, data) => {
+        if (err) {
+            return res.sendStatus(500);
+        }
+        res.json(data);
+    });
 });
 
 //Create Page
-router.get('/log', (req, res) => {
-    res.send("cohort creation page");
+router.get('/create', (req, res) => {
+    res.render();
 });
 
 //Handle Cohort Creation
-router.post('/log', (req, res) => {
+router.post('/create', (req, res) => {
     const {name, dateStart, dateEnd, students, instructors} = req.body;
 
     //Check required fields
@@ -31,7 +36,11 @@ router.post('/log', (req, res) => {
     });
 
     //Saving new Cohort
-    newCohort.save().then(cohort => res.send("success")).catch(console.log(err));
+    newCohort.save()
+    .then(cohort => res.sendStatus(200))
+    .catch(console.log(err));
+    res.sendStatus(500);
+    return;
 });
 
 module.exports = router;

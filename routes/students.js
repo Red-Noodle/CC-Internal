@@ -7,12 +7,17 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-    res.send(Student.find());
+    Student.find({}, (err, data) => {
+        if(err) {
+            return res.sendStatus(500);
+        }
+        res.json(data);
+    });
 });
 
 //Login Page
 router.get('/login', (req, res) => {
-    res.send("student login");
+    
 });
 
 //Handle Login
@@ -27,43 +32,45 @@ router.get('/register', (req, res) => {
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const {firstname, lastname, email, password, address, phone, cohortName} = req.body;
-
+    const {firstName, lastName, email, address, phone, cohort} = req.body;
+    console.log(req.body);
     //Check required fields
-    if(!firstname || !lastname || !email || !password) {
-        //alert("Please fill in all of the fields");
-    }
-
-    if(password.length < 6) {
-        //alert("Password must be at least 6 characters in length");
+    if (!firstName || !lastName || !email) {
+        return res.status(500).send({
+            status: 500,
+            data: 'Please make sure name and email are filled out'
+        });
     }
 
     //Create new Student
     const newStudent = new Student({
         name: {
-            firstName: firstname,
-            lastName: lastname
+            firstName: firstName,
+            lastName: lastName
         },
         email: email,
-        password: password,
         address: address,
-        phone: phone
+        phone: phone,
+        cohort: cohort
     });
 
-    //Hash password
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newStudent.password, salt, (err, hash) => {
-            if(err) throw err;
-            newStudent.password = hash;
-
-            //Save new Student
-            newStudent.save().then(student => res.status(200)).catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            });
+    
+    //Save new Student
+     newStudent.save().then(student => res.sendStatus(200))
+        .catch(err => {
+            console.log(err);
+            res.sendStatus(500);
+            return;
         });
-    });
+
+
+    
+});
+
+//Handle Logout
+router.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('students/login');
 });
 
 module.exports = router;

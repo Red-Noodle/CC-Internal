@@ -3,66 +3,73 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 
 const Instructor = require('../models/Instructor');
+const findInstructorsByEmail = require('../models/Instructor').findInstructorsByEmail;
 
 //Get all instructors
 router.get('/', (req, res) => {
-    res.send(Instructor.find());
+    Instructor.find({}, (err, data) => {
+        if(err) {
+            return res.sendStatus(500);
+        }
+        res.json(data);
+    });
 });
 
 //Login Page
 router.get('/login', (req, res) => {
-    res.send("instructor login");
+    
 });
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.send("instructor register");
+    res.render("../views/register.html");
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
-    const { firstname, lastname, email, password, address, phone, cohortName } = req.body;
+    const { firstName, lastName, email, street, street2, city, state, zip, phone, cohort } = req.body;
 
     //Check required fields
-    if (!firstname || !lastname || !email || !password) {
-        alert("Please fill in all of the fields")
-    }
-
-    //Check for password length
-    if (password.length < 6) {
-        alert("Password must be at least 6 characters in length");
+    if (!firstName || !lastName || !email) {
+        return res.status(500).send({
+            flash: 'please fill in all of the required fields'
+        });
     }
 
     //Create new Instructor
     const newInstructor = new Instructor({
         name: {
-            firstName: firstname,
-            lastName: lastname
+            firstName: firstName,
+            lastName: lastName
         },
         email: email,
-        password: password,
-        address: address,
-        phone: phone
+        address: {
+            street: street,
+            street2: street2,
+            city: city,
+            state: state,
+            zip: zip
+        },
+        phone: phone,
+        cohort: cohort
     });
 
-    //Hashing password
-    bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(salt, (err, hash) => {
-            if(err) {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            }
-            newInstructor.password = hash;
-
-            //Saving new Instructor
-            newInstructor.save().then(student => res.status(200)).catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            });
-        });
+    
+     //Saving Instructor
+    newInstructor.save()
+    .then(instructor => res.status(200).send({flash: 'Account created'}))
+    .catch(err => {
+        console.log(err);
+        res.sendStatus(500);
+         return;
     });
+    
+});
+
+//Handle Logout
+router.post('/logout', (req, res) => {
+    req.logOut();
+    res.redirect('instructors/login');
 });
 
 module.exports = router;

@@ -9,30 +9,36 @@ const instructorSchema = new Schema({
         lastName: { type: String, trim: true, required: true }
     },
     email: { type: String, trim: true, required: true },
-    password: {type: String, trim: true, required: true},
-    address: { type: String, trim: true, default: ""},
+    address: {
+        street: { type: String, trim: true, default: ""},
+        street2: { type: String, trim: true, default: ""},
+        city: { type: String, trim: true, default: ""},
+        state: { type: String, default: ""},
+        zip: { type: String, trim: true, default: ""}
+    },
     phone: { type: String, trim: true, default: ""},
-    cohort: {type: Schema.Types.ObjectId, ref: 'Cohort'}
+    cohort: [{type: Schema.Types.ObjectId, ref: 'Cohort'}],
+    login_link: String
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);
 
 var findInstructorsByName = function (instructorName, done) {
-    Person.find({ name: instructorName }, (err, data) => {
+    Instructor.find({ name: instructorName }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
 };
 
-var findStudentsByEmail = function (instructorEmail, done) {
-    Person.find({ email: instructorEmail }, (err, data) => {
+const findInstructorsByEmail = function (instructorEmail, done) {
+    Instructor.findOne({ email: instructorEmail }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
 };
 
 var findInstructorsById = function (instructorId, done) {
-    Person.findById(instructorId, (err, data) => {
+    Instructor.findById(instructorId, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
     });
@@ -41,3 +47,4 @@ var findInstructorsById = function (instructorId, done) {
 module.exports = Instructor;
 module.exports.findInstructorsByName = findInstructorsByName;
 module.exports.findInstructorsById = findInstructorsById;
+module.exports.findInstructorsByEmail = findInstructorsByEmail;
