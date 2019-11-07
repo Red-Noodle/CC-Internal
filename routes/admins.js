@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
         if(err) {
             return res.sendStatus(500);
         }
-        res.render(data);
+        res.json(data);
     });
 });
 
@@ -50,14 +50,24 @@ router.post('/register', (req, res) => {
         email: email,
     });
 
-    //Saving Admin
-    newAdmin.save()
-    .then(admin => res.sendStatus(200))
-    .catch(err => {
-        console.log(err);
-        res.sendStatus(500);
-        return;
+    Admin.findOne({email: email}, (err, data) => {
+        if(err) {
+            return res.status(500).send({flash:"there was an error"})
+        }
+        if(newAdmin.email == email) {
+            return res.status(500).send({flash: "account already exists"});
+        }
+        //Saving Admin
+        newAdmin.save()
+            .then(admin => res.sendStatus(200))
+            .catch(err => {
+                console.log(err);
+                res.sendStatus(500);
+                return;
+            });
     });
+
+    
 });
 
 //Handle Logout

@@ -10,7 +10,7 @@ const studentSchema = new Schema({
     address: {type: String, trim: true, default: ""},
     phone: {type: String, trim: true, default: ""},
     cohort: { type: Schema.Types.ObjectId, ref: 'Cohort' },
-    key: String
+    login_link: String
 });
 
 const Student = mongoose.model("Student", studentSchema); 

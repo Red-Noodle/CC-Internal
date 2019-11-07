@@ -12,7 +12,7 @@ const instructorSchema = new Schema({
     address: { type: String, trim: true, default: ""},
     phone: { type: String, trim: true, default: ""},
     cohort: [{type: Schema.Types.ObjectId, ref: 'Cohort'}],
-    key: String
+    login_link: String
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);
@@ -24,7 +24,7 @@ var findInstructorsByName = function (instructorName, done) {
     });
 };
 
-var findStudentsByEmail = function (instructorEmail, done) {
+var findInstructorsByEmail = function (instructorEmail, done) {
     Instructor.find({ email: instructorEmail }, (err, data) => {
         if (err) return console.log(err);
         done(null, data);
@@ -41,4 +41,4 @@ var findInstructorsById = function (instructorId, done) {
 module.exports = Instructor;
 module.exports.findInstructorsByName = findInstructorsByName;
 module.exports.findInstructorsById = findInstructorsById;
-module.exports.instructorEmail = findStudentsByEmail;
+module.exports.instructorsEmail = findInstructorsByEmail;

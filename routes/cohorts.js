@@ -8,13 +8,13 @@ router.get('/', (req, res) => {
         if (err) {
             return res.sendStatus(500);
         }
-        res.json(...data);
+        res.json(data);
     });
 });
 
 //Create Page
 router.get('/create', (req, res) => {
-    
+    res.render();
 });
 
 //Handle Cohort Creation

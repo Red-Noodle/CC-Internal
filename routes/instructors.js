@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
         if(err) {
             return res.sendStatus(500);
         }
-        res.render(data);
+        res.json(data);
     });
 });
 
@@ -21,7 +21,7 @@ router.get('/login', (req, res) => {
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.send("instructor register");
+    res.render("../views/register.html");
 });
 
 //Handle Register
@@ -31,8 +31,7 @@ router.post('/register', (req, res) => {
     //Check required fields
     if (!firstName || !lastName || !email) {
         return res.status(500).send({
-            status: 500,
-            data: 'Please make sure name and email are filled out'
+            flash: 'please fill in all of the required fields'
         });
     }
 
@@ -50,7 +49,7 @@ router.post('/register', (req, res) => {
 
     //Saving Instructor
     newInstructor.save()
-    .then(instructor => res.sendStatus(200))
+    .then(instructor => res.status(200).send({flash: 'Account created'}))
     .catch(err => {
         console.log(err);
         res.sendStatus(500);
@@ -58,6 +57,7 @@ router.post('/register', (req, res) => {
     });
 });
 
+//Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
     res.redirect('instructors/login');
