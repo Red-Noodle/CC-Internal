@@ -5,6 +5,7 @@ const Strategy = require('passport-local').Stretegy;
 const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
 
 const app = express();
 

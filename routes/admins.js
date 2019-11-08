@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const axios = require('axios');
 
 //Admin Model
 const Admin = require('../models/Admin');
+const findAdminsByEmail = Admin.findAdminsByEmail;
 
 //Get all Admins
 router.get('/', (req, res) => {
@@ -14,14 +16,31 @@ router.get('/', (req, res) => {
     });
 });
 
-//Login Page
 router.get('/login', (req, res) => {
-    res.send("admin login");
+    res.render('../views/index.html');
 });
 
-//Handle Login
-router.post('/login', (req, res) => {
-
+//Swoop Login
+router.get('/swoop', (req, res) => {
+    var email = req.body.email;
+    var admin = findAdminsByEmail(email);
+    if(admin == undefined) {
+        return res.render({error: 'account doesn\' exist'});
+    }
+    if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD) {
+        return res.render({succes: false, error: 'incorrect pass'});
+    }
+    if(admin != undefined) {
+        var key = req.query.id;
+        admin.loginKey = key;
+        axios.get(process.env.SWOOP_LOGIN_LINK + key)
+        .then(response => {
+            res.json({success: true, key: key});
+        })
+        .catch(error => {
+            res.json({success:false, error: error});
+        });
+    }
 });
 
 //Register Page
@@ -48,6 +67,7 @@ router.post('/register', (req, res) => {
             lastName: lastName
         },
         email: email,
+        pass: process.env.SWOOP_ENDPOINT_PASSWORD
     });
 
     Admin.findOne({email: email}, (err, data) => {
