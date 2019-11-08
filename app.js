@@ -23,6 +23,21 @@ app.set('view engine', 'html');
 // Express bodyparser
 app.use(express.urlencoded({extended: true}));
 
+// Express Session
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Connect flash
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.loggedIn = req.isAuthenticated();
+    next();
+});
+
 // Routes
 app.use('/', require('./routes/index'));
 app.use('/students', require('./routes/students'));

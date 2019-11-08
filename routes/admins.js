@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
+const passport = require('passport');
 
 //Admin Model
 const Admin = require('../models/Admin');
-const findAdminsByEmail = Admin.findAdminsByEmail;
 
 //Get all Admins
 router.get('/', (req, res) => {
@@ -18,81 +18,81 @@ router.get('/', (req, res) => {
 
 router.get('/login', (req, res) => {
     res.render('../views/index.html');
+    req.flash();
 });
 
 //Swoop Login
 router.get('/swoop', (req, res) => {
     var email = req.body.email;
-    var admin = findAdminsByEmail(email);
-    if(admin == undefined) {
-        return res.render({error: 'account doesn\' exist'});
-    }
-    if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD) {
-        return res.render({succes: false, error: 'incorrect pass'});
-    }
-    if(admin != undefined) {
-        var key = req.query.id;
-        admin.loginKey = key;
-        axios.get(process.env.SWOOP_LOGIN_LINK + key)
-        .then(response => {
-            res.json({success: true, key: key});
-        })
-        .catch(error => {
-            res.json({success:false, error: error});
-        });
-    }
+    // finding admin
+    var admin = Admin.findOne({email: email}).then(admin => {
+        if(admin) {
+            // admin auth
+            if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD){
+                // once verified, create admin key
+                var key = req.query.id;
+                admin.loginKey = key;
+                // verify key
+                axios.get(process.env.SWOOP_LOGIN_LINK + key)
+                .then(response => {
+                    // redirect to index
+                   return res.redirect('/', 200);
+                })
+                .catch(error => {
+                    return res.json({success : false, 'error': 'error'});
+                });
+            } else {
+                return res.status(500).send('use swoop to login');
+            }
+        } else {
+            return res.status(500).send('user doesn\'t exist');
+
+        }
+    })
+    .catch(err => {return res.status(500).send('there was an error')});
 });
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.send("admin register");
+    res.render('../views/register.html');
+    const message = req.flash();
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
+    //Define variables from request body
     const { firstName, lastName, email } = req.body;
 
     //Check required fields
-    if (!firstname || !lastname || !email) {
+    if (!firstName || !lastName || !email) {
         return res.status(500).send({
             status: 500,
             data: 'Please make sure name and email are filled out'
         });
-    }
-
-    //Create new Admin
-    const newAdmin = new Admin({
-        name: {
-            firstName: firstName,
-            lastName: lastName
-        },
-        email: email,
-        pass: process.env.SWOOP_ENDPOINT_PASSWORD
-    });
-
-    Admin.findOne({email: email}, (err, data) => {
-        if(err) {
-            return res.status(500).send({flash:"there was an error"})
-        }
-        if(newAdmin.email == email) {
-            return res.status(500).send({flash: "account already exists"});
-        }
-        //Saving Admin
-        newAdmin.save()
-            .then(admin => res.sendStatus(200))
+    } else {
+        //create new admin
+        newAdmin = new Admin({
+            name: {
+                firstName: firstName,
+                lastName:lastName
+            },
+            email:email
+            //save new admin
+        }).save()
+            .then(admin => res.status(200).send({ flash: 'Account created' }))
             .catch(err => {
                 console.log(err);
                 res.sendStatus(500);
                 return;
             });
-    });
-
-    
+    }
 });
 
 //Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
+    //destroy the current session and redirect to the login page
+    req.session.destroy();
     res.redirect('admins/login');
 });
 
