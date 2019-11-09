@@ -1,9 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 
 const Instructor = require('../models/Instructor');
-const findInstructorsByEmail = require('../models/Instructor').findInstructorsByEmail;
 
 //Get all instructors
 router.get('/', (req, res) => {

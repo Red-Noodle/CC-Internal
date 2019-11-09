@@ -8,12 +8,16 @@ const Admin = require('../models/Admin');
 
 //Get all Admins
 router.get('/', (req, res) => {
+    if(!req.isAuthenticated()) {
+        res.redirect('/admins/login');
+    } else {
     Admin.find({}, (err, data) => {
         if(err) {
             return res.sendStatus(500);
         }
         res.json(data);
-    });
+        });
+    }   
 });
 
 router.get('/login', (req, res) => {
@@ -38,11 +42,12 @@ router.get('/swoop', (req, res) => {
                 if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD) {
                     //logged in with session
                     return res.redirect('/', 200);
+                    res.locals.loggedIn;
                 } else {
                     return res.status(500).send('something went wrong');
                 }
             } else {
-                return res.status(500).send('user doesn\t exist');
+                return res.status(500).send('user doesn\'t exist');
             }
         })
         .catch(err => {
@@ -89,10 +94,10 @@ router.post('/register', (req, res) => {
                    pass: process.env.SWOOP_ENDPOINT_PASSWORD
                    //save new admin
                }).save()
-                   .then(admin => res.status(200).send({ flash: 'Account created' }))
+                   .then(admin => res.status(200).redirect('/admins/register'))
                    .catch(err => {
                        console.log(err);
-                       res.sendStatus(500);
+                       res.sendStatus(500).redirect('/admins/register');
                        return;
                    });
            }
@@ -108,7 +113,7 @@ router.post('/logout', (req, res) => {
     req.logOut();
     //destroy the current session and redirect to the login page
     req.session.destroy();
-    res.redirect('admins/login');
+    res.redirect('/admins/login');
 });
 
 module.exports = router;
