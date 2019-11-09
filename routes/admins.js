@@ -70,21 +70,33 @@ router.post('/register', (req, res) => {
             data: 'Please make sure name and email are filled out'
         });
     } else {
-        //create new admin
-        newAdmin = new Admin({
-            name: {
-                firstName: firstName,
-                lastName:lastName
-            },
-            email:email
-            //save new admin
-        }).save()
-            .then(admin => res.status(200).send({ flash: 'Account created' }))
-            .catch(err => {
-                console.log(err);
-                res.sendStatus(500);
-                return;
-            });
+        // checking if admin already exists
+       Admin.findOne({email: email})
+       .then(admin => {
+           if(admin) {
+               // sending a message if admin does exist
+               return res.status(500).send('user already exists');
+           } else {
+               //create new admin if one wasn't found
+               newAdmin = new Admin({
+                   name: {
+                       firstName: firstName,
+                       lastName: lastName
+                   },
+                   email: email
+                   //save new admin
+               }).save()
+                   .then(admin => res.status(200).send({ flash: 'Account created' }))
+                   .catch(err => {
+                       console.log(err);
+                       res.sendStatus(500);
+                       return;
+                   });
+           }
+       })
+       .catch(err => {
+           return res.status(500).send('there was an error');
+       });
     }
 });
 
