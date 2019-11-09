@@ -7,9 +7,18 @@ const adminSchema = new Schema({
         lastName: {type: String, trim: true, required: true}
     },
     email: {type: String, trim: true, required: true},
-    login_link: String
+    loginKey: String,
+    pass: String
 });
 
 const Admin = mongoose.model('Admin', adminSchema);
 
+var findAdminsByEmail = function (adminEmail, done) {
+    Admin.findOne({ email: adminEmail }, (err, data) => {
+        if (err) return console.log(err);
+        done(null, data);
+    });
+};
+
 module.exports = Admin;
+module.exports.findAdminsByEmail = findAdminsByEmail;

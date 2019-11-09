@@ -5,6 +5,7 @@ const Strategy = require('passport-local').Stretegy;
 const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
+const dotenv = require('dotenv').config();
 
 const app = express();
 
@@ -22,6 +23,21 @@ app.set('view engine', 'html');
 // Express bodyparser
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
+
+// Express Session
+app.use(session({
+    secret: 'secret',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Connect flash
+app.use(flash());
+
+app.use((req, res, next) => {
+    res.locals.loggedIn = req.isAuthenticated();
+    next();
+});
 
 // Routes
 app.use('/', require('./routes/index'));
