@@ -23,33 +23,35 @@ router.get('/login', (req, res) => {
 
 //Swoop Login
 router.get('/swoop', (req, res) => {
-    var email = req.body.email;
-    // finding admin
-    var admin = Admin.findOne({email: email}).then(admin => {
-        if(admin) {
-            // admin auth
-            if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD){
-                // once verified, create admin key
-                var key = req.query.id;
-                admin.loginKey = key;
-                // verify key
-                axios.get(process.env.SWOOP_LOGIN_LINK + key)
-                .then(response => {
-                    // redirect to index
-                   return res.redirect('/', 200);
-                })
-                .catch(error => {
-                    return res.json({success : false, 'error': 'error'});
-                });
-            } else {
-                return res.status(500).send('use swoop to login');
-            }
-        } else {
-            return res.status(500).send('user doesn\'t exist');
+    //receive an id from swoop
+    var id = req.query.id;
 
-        }
+    //validating id and getting email address
+    axios.get(process.env.SWOOP_LOGIN_LINK + id)
+    .then(response => {
+        var email = response.data;
+        //basic email auth
+        Admin.findOne({email: email})
+        .then(admin => {
+            if(admin) {
+                //admin auth
+                if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD) {
+                    //logged in with session
+                    return res.redirect('/', 200);
+                } else {
+                    return res.status(500).send('something went wrong');
+                }
+            } else {
+                return res.status(500).send('user doesn\t exist');
+            }
+        })
+        .catch(err => {
+            return res.status(500);
+        })
     })
-    .catch(err => {return res.status(500).send('there was an error')});
+    .catch(err => {
+        return res.status(500);
+    });
 });
 
 //Register Page
@@ -83,7 +85,8 @@ router.post('/register', (req, res) => {
                        firstName: firstName,
                        lastName: lastName
                    },
-                   email: email
+                   email: email,
+                   pass: process.env.SWOOP_ENDPOINT_PASSWORD
                    //save new admin
                }).save()
                    .then(admin => res.status(200).send({ flash: 'Account created' }))

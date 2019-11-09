@@ -34,36 +34,47 @@ router.post('/register', (req, res) => {
         return res.status(500).send({
             flash: 'please fill in all of the required fields'
         });
+    } else {
+        Instructor.findOne({email: email})
+        .then(instructor => {
+            if(instructor) {
+                res.status(500).send('instructor already exists');
+            } else {
+                //Create new Instructor
+                const newInstructor = new Instructor({
+                    name: {
+                        firstName: firstName,
+                        lastName: lastName
+                    },
+                    email: email,
+                    address: {
+                        street: street,
+                        street2: street2,
+                        city: city,
+                        state: state,
+                        zip: zip
+                    },
+                    phone: phone,
+                    cohort: cohort
+                });
+
+
+                //Saving Instructor
+                newInstructor.save()
+                    .then(instructor => {
+                        return res.status(200).send({ flash: 'Account created' })
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    });
+            }
+        })
+            .catch(err => {
+                return res.status(500).send('there was an error');
+            });
     }
-
-    //Create new Instructor
-    const newInstructor = new Instructor({
-        name: {
-            firstName: firstName,
-            lastName: lastName
-        },
-        email: email,
-        address: {
-            street: street,
-            street2: street2,
-            city: city,
-            state: state,
-            zip: zip
-        },
-        phone: phone,
-        cohort: cohort
-    });
-
-    
-     //Saving Instructor
-    newInstructor.save()
-    .then(instructor => res.status(200).send({flash: 'Account created'}))
-    .catch(err => {
-        console.log(err);
-        res.sendStatus(500);
-         return;
-    });
-    
 });
 
 //Handle Logout

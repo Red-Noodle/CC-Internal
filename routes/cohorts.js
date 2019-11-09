@@ -23,7 +23,7 @@ router.post('/create', (req, res) => {
 
     //Check required fields
     if(!name) {
-        //alert("Please fill in the required fields")
+        res.status(500).send('please fill in all of the fields');
     }
 
     //Creating a new Cohort

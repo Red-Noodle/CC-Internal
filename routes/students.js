@@ -40,31 +40,39 @@ router.post('/register', (req, res) => {
             status: 500,
             data: 'Please make sure name and email are filled out'
         });
+    } else {
+        Student.findOne({email: email})
+        .then(student => {
+            if(student) {
+                res.status(500).send('student already exists');
+            } else {
+                //Create new Student
+                const newStudent = new Student({
+                    name: {
+                        firstName: firstName,
+                        lastName: lastName
+                    },
+                    email: email,
+                    address: address,
+                    phone: phone,
+                    cohort: cohort
+                });
+
+
+                //Save new Student
+                newStudent.save().then(student => res.sendStatus(200))
+                    .catch(err => {
+                        console.log(err);
+                        res.sendStatus(500);
+                        return;
+                    });
+
+            }
+        })
+            .catch(err => {
+                return res.status(500).send('there was an error');
+            })
     }
-
-    //Create new Student
-    const newStudent = new Student({
-        name: {
-            firstName: firstName,
-            lastName: lastName
-        },
-        email: email,
-        address: address,
-        phone: phone,
-        cohort: cohort
-    });
-
-    
-    //Save new Student
-     newStudent.save().then(student => res.sendStatus(200))
-        .catch(err => {
-            console.log(err);
-            res.sendStatus(500);
-            return;
-        });
-
-
-    
 });
 
 //Handle Logout
