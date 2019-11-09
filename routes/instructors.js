@@ -17,7 +17,7 @@ router.get('/', (req, res) => {
 
 //Login Page
 router.get('/login', (req, res) => {
-    
+    res.send('no such thing');
 });
 
 //Register Page

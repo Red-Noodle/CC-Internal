@@ -22,7 +22,7 @@ router.get('/login', (req, res) => {
 
 //Handle Login
 router.post('/login', (err, res) => {
-    
+    res.send('no such thing');
 });
 
 //Register Page
