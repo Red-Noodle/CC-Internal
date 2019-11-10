@@ -25,13 +25,6 @@ app.set('view engine', 'html');
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
-// Express Session
-app.use(session({
-    secret: 'secret',
-    resave: false,
-    saveUninitialized: false
-}));
-
 // Connect flash
 app.use(flash());
 
@@ -48,4 +41,3 @@ app.use('/admins', require('./routes/admins'));
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, console.log(`Server started on port ${PORT}`));
-

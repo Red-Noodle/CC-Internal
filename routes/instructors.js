@@ -7,7 +7,7 @@ const Instructor = require('../models/Instructor');
 router.get('/', (req, res) => {
     Instructor.find({}, (err, data) => {
         if(err) {
-            return res.sendStatus(500);
+            return req.flash({error: err});
         }
         res.json(data);
     });
@@ -15,12 +15,11 @@ router.get('/', (req, res) => {
 
 //Login Page
 router.get('/login', (req, res) => {
-    res.send('no such thing');
+   
 });
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.render("../views/register.html");
 });
 
 //Handle Register
@@ -29,14 +28,13 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return res.status(500).send({
-            flash: 'please fill in all of the required fields'
-        });
+        return req.flash({error: 'please fill in name and email fields'});
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
             if(instructor) {
-                res.status(500).send('instructor already exists');
+                //Instructor exists
+                return req.flash({error: 'instructor already exists'});
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -60,17 +58,16 @@ router.post('/register', (req, res) => {
                 //Saving Instructor
                 newInstructor.save()
                     .then(instructor => {
-                        return res.status(200).send({ flash: 'Account created' })
+                        //Success
+                        req.flash({success: 'instructor registered'});
                     })
                     .catch(err => {
-                        console.log(err);
-                        res.sendStatus(500);
-                        return;
+                        return req.flash({error: err});
                     });
             }
         })
             .catch(err => {
-                return res.status(500).send('there was an error');
+                return req.flash({error: err});
             });
     }
 });
@@ -78,7 +75,6 @@ router.post('/register', (req, res) => {
 //Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
-    res.redirect('instructors/login');
 });
 
 module.exports = router;

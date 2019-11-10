@@ -3,6 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
 
+
 //Admin Model
 const Admin = require('../models/Admin');
 
@@ -33,45 +34,46 @@ router.get('/swoop', (req, res) => {
     //validating id and getting email address
     axios.get(process.env.SWOOP_LOGIN_LINK + key)
     .then(response => {
+        //Receive email from swoop
         var email = response.data;
         Admin.findOne({email: email}) 
         .then(admin => {
+            //Email auth and setting key
             admin.loginKey = key;
-            res.redirect('/');
+            req.flash({success: 'logged in'});
+            if(!admin) {
+                req.flash({error: 'admin doesn\'t exist'})
+            }
         })
         .catch(err => {
-            console.log(err);
-            res.redirect('/admins/login');
+            return req.flash({error: err});
         });
     })
     .catch(err => {
-        res.json({success: false, error: error});
+        req.flash({error: err});
     });
 });
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.render('../views/register.html');
+
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
     //Define variables from request body
     const { firstName, lastName, email } = req.body;
-
+    console.log(req.body);
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return res.status(500).send({
-            status: 500,
-            data: 'Please make sure name and email are filled out'
-        });
+        return req.flash({error: 'please fill in name and email fields'});
     } else {
         // checking if admin already exists
        Admin.findOne({email: email})
        .then(admin => {
            if(admin) {
                // sending a message if admin does exist
-               return res.status(500).send('user already exists');
+               return req.flash({error: 'admin already exists'})
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -82,16 +84,15 @@ router.post('/register', (req, res) => {
                    email: email,
                    //save new admin
                }).save()
-                   .then(admin => res.status(200).redirect('/admins/register'))
+                   .then(admin => req.flash({success: 'admin registered'}))
                    .catch(err => {
                        console.log(err);
-                       res.status(500).redirect('/admins/register');
-                       return;
+                       return req.flash({error: err});
                    });
            }
        })
        .catch(err => {
-           return res.status(500).send('there was an error');
+           return req.flash({error: err});
        });
     }
 });
@@ -101,7 +102,6 @@ router.post('/logout', (req, res) => {
     req.logOut();
     //destroy the current session and redirect to the login page
     req.session.destroy();
-    res.redirect('/admins/login');
 });
 
 module.exports = router;

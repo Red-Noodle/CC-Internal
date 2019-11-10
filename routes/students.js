@@ -21,12 +21,10 @@ router.get('/login', (req, res) => {
 
 //Handle Login
 router.post('/login', (err, res) => {
-    res.send('no such thing');
 });
 
 //Register Page
 router.get('/register', (req, res) => {
-    res.render('../views/register.html');
 });
 
 //Handle Register
@@ -35,15 +33,12 @@ router.post('/register', (req, res) => {
     console.log(req.body);
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return res.status(500).send({
-            status: 500,
-            data: 'Please make sure name and email are filled out'
-        });
+        return req.flash({error: 'please fill in all of the name and email fields'})
     } else {
         Student.findOne({email: email})
         .then(student => {
             if(student) {
-                res.status(500).send('student already exists');
+                return req.flash({error: 'student already exists'});
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -59,17 +54,15 @@ router.post('/register', (req, res) => {
 
 
                 //Save new Student
-                newStudent.save().then(student => res.sendStatus(200))
+                newStudent.save().then(student => req.flash({success: 'student registered'}))
                     .catch(err => {
-                        console.log(err);
-                        res.sendStatus(500);
-                        return;
+                        return req.flash({error: err});
                     });
 
             }
         })
             .catch(err => {
-                return res.status(500).send('there was an error');
+                return req.flash({error: err});
             })
     }
 });

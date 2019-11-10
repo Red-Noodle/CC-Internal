@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 
 //Create Page
 router.get('/create', (req, res) => {
-    res.render();
+    
 });
 
 //Handle Cohort Creation
@@ -23,7 +23,7 @@ router.post('/create', (req, res) => {
 
     //Check required fields
     if(!name) {
-        res.status(500).send('please fill in all of the fields');
+        return req.flash({error: 'user already exists'});
     }
 
     //Creating a new Cohort
@@ -37,10 +37,10 @@ router.post('/create', (req, res) => {
 
     //Saving new Cohort
     newCohort.save()
-    .then(cohort => res.sendStatus(200))
-    .catch(console.log(err));
-    res.sendStatus(500);
-    return;
+    .then(cohort => req.flash({success: 'cohort created'}))
+    .catch(err => {
+    return req.flash({error: err})
+    });
 });
 
 module.exports = router;
