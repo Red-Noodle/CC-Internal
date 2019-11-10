@@ -8,7 +8,8 @@ const Admin = require('../models/Admin');
 
 //Get all Admins
 router.get('/', (req, res) => {
-    if(!req.isAuthenticated()) {
+    key = req.id;
+    if(!key) {
         res.redirect('/admins/login');
     } else {
     Admin.find({}, (err, data) => {
@@ -22,47 +23,35 @@ router.get('/', (req, res) => {
 
 router.get('/login', (req, res) => {
     res.render('../views/index.html');
-    req.flash();
 });
 
 //Swoop Login
 router.get('/swoop', (req, res) => {
     //receive an id from swoop
-    var id = req.query.id;
+    var key = req.query.id;
 
     //validating id and getting email address
-    axios.get(process.env.SWOOP_LOGIN_LINK + id)
+    axios.get(process.env.SWOOP_LOGIN_LINK + key)
     .then(response => {
         var email = response.data;
-        //basic email auth
-        Admin.findOne({email: email})
+        Admin.findOne({email: email}) 
         .then(admin => {
-            if(admin) {
-                //admin auth
-                if(admin.pass == process.env.SWOOP_ENDPOINT_PASSWORD) {
-                    //logged in with session
-                    return res.redirect('/', 200);
-                    res.locals.loggedIn;
-                } else {
-                    return res.status(500).send('something went wrong');
-                }
-            } else {
-                return res.status(500).send('user doesn\'t exist');
-            }
+            admin.loginKey = key;
+            res.redirect('/');
         })
         .catch(err => {
-            return res.status(500);
-        })
+            console.log(err);
+            res.redirect('/admins/login');
+        });
     })
     .catch(err => {
-        return res.status(500);
+        res.json({success: false, error: error});
     });
 });
 
 //Register Page
 router.get('/register', (req, res) => {
     res.render('../views/register.html');
-    const message = req.flash();
 });
 
 //Handle Register
@@ -91,13 +80,12 @@ router.post('/register', (req, res) => {
                        lastName: lastName
                    },
                    email: email,
-                   pass: process.env.SWOOP_ENDPOINT_PASSWORD
                    //save new admin
                }).save()
                    .then(admin => res.status(200).redirect('/admins/register'))
                    .catch(err => {
                        console.log(err);
-                       res.sendStatus(500).redirect('/admins/register');
+                       res.status(500).redirect('/admins/register');
                        return;
                    });
            }

@@ -6,6 +6,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv').config();
+const cors = require('cors');
 
 const app = express();
 
@@ -34,10 +35,8 @@ app.use(session({
 // Connect flash
 app.use(flash());
 
-app.use((req, res, next) => {
-    res.locals.loggedIn = req.isAuthenticated();
-    next();
-});
+// Use Cors
+app.use(cors());
 
 // Routes
 app.use('/', require('./routes/index'));

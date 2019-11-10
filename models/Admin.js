@@ -7,8 +7,7 @@ const adminSchema = new Schema({
         lastName: {type: String, trim: true, required: true}
     },
     email: {type: String, trim: true, required: true},
-    loginKey: String,
-    pass: String
+    loginKey: String
 });
 
 const Admin = mongoose.model('Admin', adminSchema);
