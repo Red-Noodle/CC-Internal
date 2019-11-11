@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
+const mongoose = require('mongoose');
 
 
 //Admin Model
@@ -99,7 +100,7 @@ router.post('/register', (req, res) => {
            if(admin) {
                // sending a message if admin does exist
                req.flash('error', 'admin already exists');
-               res.status(500);
+               return res.status(500).send();
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -110,17 +111,20 @@ router.post('/register', (req, res) => {
                    email: email,
                    //save new admin
                }).save()
-                    .exec()
-                    .then(admin => req.flash('success', 'admin registered'))
+                    .then(admin => {
+                        console.log(admin);
+                        req.flash('success', 'admin registered');
+                        res.status(200).send();
+                    })
                     .catch(err => {
                        console.log(err);
-                       return res.status(500).json({error: err});
+                       return res.status(500).send();
                    });
            }
        })
        .catch(err => {
            console.log(err);
-           return res.status(500);
+           return res.status(500).send();
       });
     }
 });
@@ -133,29 +137,37 @@ router.post('/logout', (req, res) => {
 });
 
 // //Handle updating an admin
-router.put('/adminId', (req, res) => {
+router.put('/:adminId', (req, res) => {
     var id = req.params.adminId;
-    Admin.findByIdAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-          email: req.body.email
+    Admin.findOne({_id: id}, (err, admin) => {
+        if(err) {
+            console.log(err);
+            res.status(500).send();
+        } else {
+            if(!admin) {
+                res.status(404).send();
+            } else {
+                if(req.body.fistName) {
+                    admin.firstName = req.body.firstName;
+                }
+                if(req.body.lastName) {
+                    admin.lastName = req.body.lastName;
+                } 
+                if(req.body.email) {
+                    admin.email = req.body.email;
+                }
+                admin.save()
+                .then( updatedAdmin => {
+                    console.log(updatedAdmin);
+                    res.status(200).json(updatedAdmin);
+                })
+                .catch(err => {
+                    console.log(err);
+                    return res.status(500).send();
+                });
+            }
         }
-      },
-      { new: true }
-    )
-      .exec()
-      .then(update => {
-        console.log(err);
-        req.flash("success", "successfully updated");
-        res.status(200).json(result);
-      })
-      .catch(err => {
-        console.log(err);
-        return res.status(500);
-      });
+    });
 });
 
 // //Handle deleting an admin
@@ -165,7 +177,7 @@ router.delete('/:adminId', (req, res) => {
     .exec()
     .then(result => {
         req.flash('success', 'admin was deleted');
-        res.status(200);
+        res.status(200).send();
     })
     .catch( err => {
         console.log(err);
