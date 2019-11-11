@@ -3,14 +3,32 @@ const router = express.Router();
 
 const Cohort = require('../models/Cohort');
 
+//Get all cohorts
 router.get('/', (req, res) => {
-    Cohort.find({}, (err, data) => {
-        if (err) {
-            return res.sendStatus(500);
-        }
-        res.json(data);
+    Cohort.find()
+    .exec()
+    .then(cohorts => {
+        res.status(200).json(cohorts);
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500);
     });
 });
+
+//Get a cohort by id
+router.get('/:cohortId', (req, res) => {
+    var id = req.params.cohortId;
+    Cohort.findById({_id: id})
+    .exec()
+    .then(cohort => {
+        res.status(200).json(cohort);
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500);
+    });
+})
 
 //Create Page
 router.get('/create', (req, res) => {
@@ -23,7 +41,8 @@ router.post('/create', (req, res) => {
 
     //Check required fields
     if(!name) {
-        return req.flash({error: 'user already exists'});
+        req.flash({error: 'user already exists'});
+        res.status(500);
     }
 
     //Creating a new Cohort
@@ -37,9 +56,13 @@ router.post('/create', (req, res) => {
 
     //Saving new Cohort
     newCohort.save()
-    .then(cohort => req.flash({success: 'cohort created'}))
+    .then(cohort => {
+        req.flash({success: 'cohort created'});
+        res.status(200);
+    })
     .catch(err => {
-    return req.flash({error: err})
+        console.log(err);
+         return res.status(500);
     });
 });
 

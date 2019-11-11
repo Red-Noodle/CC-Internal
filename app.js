@@ -25,6 +25,15 @@ app.set('view engine', 'html');
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
+// Express Session
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
 // Connect flash
 app.use(flash());
 

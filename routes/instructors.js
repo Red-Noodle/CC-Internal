@@ -5,11 +5,28 @@ const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
-    Instructor.find({}, (err, data) => {
-        if(err) {
-            return req.flash({error: err});
-        }
-        res.json(data);
+    Instructor.find()
+    .exec()
+    .then(instructors => {
+        res.status(200).json(instructors);
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500);
+    });
+});
+
+//Get instructor by id
+router.get('/:instructorId', (req, res) => {
+    var id = req.params.instructorId;
+    Instructor.findById({_id: id})
+    .exec()
+    .then(instructor => {
+        res.status(200).json(instructor);
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500);
     });
 });
 

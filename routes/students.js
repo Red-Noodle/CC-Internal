@@ -6,11 +6,33 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-    Student.find({}, (err, data) => {
-        if(err) {
-            return res.sendStatus(500);
+    Student.find()
+    .exec()
+    .then(students => {
+        res.status(200).json(students);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500);
+    });
+});
+
+// Get a student by id
+router.get('/:studentId', (req, res) => {
+    var id = req.params.studentId;
+    Student.findById({_id: id})
+    .exec()
+    .then(student => {
+        if(!student) {
+            req.flash('error', 'student doesn\' exist');
+            res.status(404);
+        } else {
+            res.status(200).json(student);
         }
-        res.json(data);
+    })
+    .catch( err => {
+        console.log(err);
+        return res.status(500);
     });
 });
 
@@ -30,15 +52,16 @@ router.get('/register', (req, res) => {
 //Handle Register
 router.post('/register', (req, res) => {
     const {firstName, lastName, email, address, phone, cohort} = req.body;
-    console.log(req.body);
+
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return req.flash({error: 'please fill in all of the name and email fields'})
+        req.flash({ error: "please fill in all of the name and email fields" });
+        res.status(500);
     } else {
         Student.findOne({email: email})
         .then(student => {
             if(student) {
-                return req.flash({error: 'student already exists'});
+                req.flash({error: 'student already exists'});
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -54,15 +77,18 @@ router.post('/register', (req, res) => {
 
 
                 //Save new Student
-                newStudent.save().then(student => req.flash({success: 'student registered'}))
+                newStudent.save()
+                     .then(student => req.flash({success: 'student registered'}))
                     .catch(err => {
-                        return req.flash({error: err});
+                        console.log(err);
+                        return res.status(500);
                     });
 
             }
         })
             .catch(err => {
-                return req.flash({error: err});
+                console.log(err)
+                return res.status(500);
             })
     }
 });
@@ -70,7 +96,6 @@ router.post('/register', (req, res) => {
 //Handle Logout
 router.post('/logout', (req, res) => {
     req.logOut();
-    res.redirect('students/login');
 });
 
 module.exports = router;
