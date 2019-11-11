@@ -22,36 +22,4 @@ const studentSchema = new Schema({
 
 const Student = mongoose.model("Student", studentSchema); 
 
-var findStudentsByName = function (studentName, done) {
-    Student.find({ name: studentName }, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
-var findStudentsByEmail = function (studentEmail, done) {
-    Student.find({ email: studentEmail }, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
-var findStudentById = function (studentId, done) {
-    Student.findById(studentId, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
-var findAllStudents = function (students, dont) {
-    Student.find({}, (err, data) => {
-        if (err) return console.log(err);
-        dont(null, data);
-    });
-}
-
 module.exports = Student;
-module.exports.findStudentById = findStudentById;
-module.exports.findStudentsByName = findStudentsByName;
-module.exports.findStudentsByEmail = findStudentsByEmail;
-module.exports.findAllStudents = findAllStudents;

@@ -13,12 +13,4 @@ const adminSchema = new Schema({
 
 const Admin = mongoose.model('Admin', adminSchema);
 
-var findAdminsByEmail = function (adminEmail, done) {
-    Admin.findOne({ email: adminEmail }, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
 module.exports = Admin;
-module.exports.findAdminsByEmail = findAdminsByEmail;

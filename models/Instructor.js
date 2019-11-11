@@ -24,28 +24,4 @@ const instructorSchema = new Schema({
 
 var Instructor = mongoose.model("Instructor", instructorSchema);
 
-var findInstructorsByName = function (instructorName, done) {
-    Instructor.find({ name: instructorName }, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
-const findInstructorsByEmail = function (instructorEmail, done) {
-    Instructor.findOne({ email: instructorEmail }, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
-var findInstructorsById = function (instructorId, done) {
-    Instructor.findById(instructorId, (err, data) => {
-        if (err) return console.log(err);
-        done(null, data);
-    });
-};
-
 module.exports = Instructor;
-module.exports.findInstructorsByName = findInstructorsByName;
-module.exports.findInstructorsById = findInstructorsById;
-module.exports.findInstructorsByEmail = findInstructorsByEmail;
