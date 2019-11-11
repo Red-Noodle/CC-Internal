@@ -5,6 +5,7 @@ const Student = require('./Student');
 const Instructor = require('./Instructor');
 
 const cohortSchema = new Schema({
+    _id: new mongoose.Schema.Types.ObjectId,
     name: { type: String, required: true},
     dateStart: { type: String, trim: true},
     dateEnd: { type: String, trim: true},

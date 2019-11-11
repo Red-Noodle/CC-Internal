@@ -4,6 +4,7 @@ const Cohort = require('./Cohort');
 
 
 const instructorSchema = new Schema({
+    _id: new mongoose.Schema.Types.ObjectId,
     name: {
         firstName: { type: String, trim: true, required: true },
         lastName: { type: String, trim: true, required: true }
