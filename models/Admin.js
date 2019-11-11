@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const adminSchema = new Schema({
-    _id: new mongoose.Schema.Types.ObjectId,
+    _id: mongoose.Schema.Types.ObjectId,
     name: {
         firstName: {type: String, trim: true, required: true},
         lastName: {type: String, trim: true, required: true}
