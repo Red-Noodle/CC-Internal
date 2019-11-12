@@ -183,9 +183,4 @@ router.delete('/:studentId', (req, res) => {
        });
 });
 
-//Handle Logout
-router.post('/logout', (req, res) => {
-    req.logOut();
-});
-
 module.exports = router;

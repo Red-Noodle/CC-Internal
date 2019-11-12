@@ -180,9 +180,4 @@ router.delete('/:instructorId', (req, res) => {
     });
 });
 
-//Handle Logout
-router.post('/logout', (req, res) => {
-    req.logOut();
-});
-
 module.exports = router;

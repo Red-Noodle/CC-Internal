@@ -9,9 +9,9 @@ const cohortSchema = new Schema({
     dateStart: { type: String, trim: true},
     dateEnd: { type: String, trim: true},
     location: {
-        city: String,
-        state: String,
-        country: String
+        city: {type: String, default:""},
+        state: {type: String, default:""},
+        country: {type: String, default:""}
     },
     students: [{type: Schema.Types.ObjectId, ref: 'Student'}],
     instructors: [{type: Schema.Types.ObjectId, ref: 'Instructor'}]
