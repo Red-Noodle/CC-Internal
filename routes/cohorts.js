@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+//Cohort Model
 const Cohort = require('../models/Cohort');
 
 //Get all cohorts
@@ -12,7 +13,7 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -26,7 +27,7 @@ router.get('/:cohortId', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 })
 
@@ -45,13 +46,12 @@ router.post('/create', (req, res) => {
       instructors,
       city,
       state,
-      country
     } = req.body;
 
     //Check required fields
     if(!name) {
         req.flash('error', 'please fill in the name field');
-        res.status(500).send();
+        return res.status(500);
     }
 
     //Creating a new Cohort
@@ -59,10 +59,9 @@ router.post('/create', (req, res) => {
         name: name,
         dateStart: dateStart,
         dateEnd: dateEnd,
-        address: {
+        location: {
             city: city,
-            state: state,
-            country: country
+            state: state
         },
         students: students,
         instructors: instructors
@@ -72,11 +71,11 @@ router.post('/create', (req, res) => {
     newCohort.save()
     .then(cohort => {
         req.flash('success', 'cohort created');
-        res.status(200).send();
+        return res.status(200);
     })
     .catch(err => {
         console.log(err);
-         return res.status(500).send();
+         return res.status(500);
     });
 });
 
@@ -91,7 +90,6 @@ router.patch('/cohortId', (req, res) => {
           instructors,
           city,
           state,
-          country
         } = req.body;
     Cohort.updateOne({_id: id}, 
         {
@@ -99,10 +97,9 @@ router.patch('/cohortId', (req, res) => {
                 name: name,
                 dateStart: dateStart,
                 dateEnd: dateEnd,
-                address: {
+                location: {
                     city: city,
-                    state: state,
-                    country: country
+                    state: state
                 },
                 students: students,
                 instructors: instructors
@@ -114,15 +111,15 @@ router.patch('/cohortId', (req, res) => {
     .then(updatedCohort => {
         if(!updatedCohort) {
             req.flash('error', 'cohort not found')
-            res.status(400).send();
+            res.status(404);
         } else {
             req.flash('success', 'cohort updated');
-            res.status(200).send();
+            res.status(200);
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -134,15 +131,15 @@ router.delete('/:cohortId', (req, res) => {
     .then(cohort => {
         if(!cohort) {
             req.flash('error', 'cohort not found');
-            res.status(404).send();
+            res.status(404);
         } else {
             req.flash('success', 'cohort was deleted');
-            res.status(200).send();
+            res.status(200);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send()
+        return res.status(500);
     });
 });
 

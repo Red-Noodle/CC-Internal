@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
+//Instructor Model
 const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
     Instructor.find()
+    .sort({field: 'asc'})
     .exec()
     .then(instructors => {
         res.status(200).json(instructors);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -24,14 +26,14 @@ router.get('/:instructorId', (req, res) => {
     .then(instructor => {
         if(!instructor) {
             req.flash('error', 'instructor not found');
-            res.status(400).send();
+            res.status(400);
         }else {
             res.status(200).json(instructor);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -93,17 +95,17 @@ router.post('/register', (req, res) => {
                     .then(instructor => {
                         //Success
                         req.flash('success', 'instructor registered');
-                        res.status(200).send();
+                        res.status(200);
                     })
                     .catch(err => {
                         console.log(err);
-                        res.status(500).send();
+                        res.status(500);
                     });
             }
         })
             .catch(err => {
                 console.log(err);
-                res.status(500).send();
+                res.status(500);
             });
     }
 });
@@ -149,14 +151,14 @@ router.patch('/:instructorId', (req, res) => {
     .then(updatedInstructor => {
         if(!updatedInstructor) {
             req.flash('instructor not found');
-            res.status(404).send();
+            res.status(404);
         } else {
-            res.status(200).send();
+            res.status(200);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -168,15 +170,15 @@ router.delete('/:instructorId', (req, res) => {
     .then(instructor => {
         if(!instructor) {
             req.flash('error', 'instructor not found');
-            res.status(404).send();
+            res.status(404);
         } else {
             req.flash('success', 'instructor deleted');
-            res.status(200).send();
+            res.status(200);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 

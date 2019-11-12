@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const axios = require('axios');
 const passport = require('passport');
-const mongoose = require('mongoose');
 
 
 //Admin Model
@@ -100,7 +99,7 @@ router.post('/register', (req, res) => {
            if(admin) {
                // sending a message if admin does exist
                req.flash('error', 'admin already exists');
-               return res.status(500).send();
+               res.status(500).send();
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -114,11 +113,11 @@ router.post('/register', (req, res) => {
                     .then(admin => {
                         console.log(admin);
                         req.flash('success', 'admin registered');
-                        res.status(200).send();
+                        return res.status(200);
                     })
                     .catch(err => {
                        console.log(err);
-                       return res.status(500).send();
+                       return res.status(500);
                    });
            }
        })

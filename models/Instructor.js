@@ -17,8 +17,8 @@ const instructorSchema = new Schema({
         zip: { type: String, trim: true, default: ""}
     },
     phone: { type: String, trim: true, default: ""},
-    cohort: [{type: Schema.Types.ObjectId, ref: 'Cohort'}],
-    loginKey: String
+    cohort: String
+//[{type: Schema.Types.ObjectId, ref: 'Cohort'}],
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);

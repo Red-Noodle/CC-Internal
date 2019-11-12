@@ -7,13 +7,14 @@ const Student = require('../models/Student');
 //Get all studentss
 router.get('/', (req, res) => {
     Student.find()
+    .sort({field: 'asc'})
     .exec()
     .then(students => {
         res.status(200).json(students);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -25,14 +26,14 @@ router.get('/:studentId', (req, res) => {
     .then(student => {
         if(!student) {
             req.flash('error', 'student not found');
-            res.status(404).send();
+            res.status(404);
         } else {
             res.status(200).json(student);
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 
@@ -66,7 +67,7 @@ router.post('/register', (req, res) => {
     //Check required fields
     if (!firstName || !lastName || !email) {
         req.flash('error', 'fill name and email fields');
-        res.status(500).send();
+        res.status(500);
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
@@ -97,18 +98,18 @@ router.post('/register', (req, res) => {
                 newStudent.save()
                      .then(student => {
                          req.flash('success', 'student registered');
-                         res.status(200).send();
+                         res.status(200).json(student);
                      })
                     .catch(err => {
                         console.log(err);
-                        return res.status(500).send();
+                        return res.status(500);
                     });
 
             }
         })
             .catch(err => {
                 console.log(err)
-                return res.status(500).send();
+                return res.status(500);
             })
     }
 });
@@ -154,11 +155,11 @@ router.patch('/:studentId', (req, res) => {
     .exec()
     .then(updatedStudent => {
         req.flash('success', 'student updated');
-        res.status(200).send();
+        res.status(200).json(updatedStudent);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send()
+        return res.status(500);
     });
 });
 
@@ -174,7 +175,7 @@ router.delete('/:studentId', (req, res) => {
                res.status(404).send();
            } else {
              req.flash("success", "student was deleted");
-             res.status(200).send();
+             res.status(200).json(student);
            }
        })
        .catch(err => {
