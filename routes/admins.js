@@ -61,7 +61,7 @@ router.get('/swoop', (req, res) => {
             if(admin) {
                 admin.loginKey = key;
                 req.session.secret = key;
-                res.status(200).json({success: true, email: email, key: key});
+                res.status(200);
             } else {
                 req.flash('error', 'admin not found');
                 res.status(500);
@@ -123,7 +123,7 @@ router.post('/register', (req, res) => {
        })
        .catch(err => {
            console.log(err);
-           return res.status(500).send();
+           return res.status(500);
       });
     }
 });
@@ -156,16 +156,16 @@ router.patch('/:adminId', (req, res) => {
       .then(updatedAdmin => {
         if (!updatedAdmin) {
             req.flash('error', 'admin not found')
-          res.status(404).send();
+          res.status(404);
         } else {
           console.log(updatedAdmin);
           req.flash("success", 'admin updated');
-          res.status(200).send();
+          res.status(200);
         }
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
       });
 });
 
@@ -178,15 +178,15 @@ router.delete('/:adminId', (req, res) => {
     .then(admin => {
         if(!admin) {
             req.flash('error', 'admin not found');
-            res.status(404).send();
+            res.status(404);
         } else {
             req.flash('success', 'admin was deleted');
-            res.status(200).send();
+            res.status(200);
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500);
     });
 });
 

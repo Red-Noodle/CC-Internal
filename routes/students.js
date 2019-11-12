@@ -98,7 +98,7 @@ router.post('/register', (req, res) => {
                 newStudent.save()
                      .then(student => {
                          req.flash('success', 'student registered');
-                         res.status(200).json(student);
+                         res.status(200);
                      })
                     .catch(err => {
                         console.log(err);
@@ -155,7 +155,7 @@ router.patch('/:studentId', (req, res) => {
     .exec()
     .then(updatedStudent => {
         req.flash('success', 'student updated');
-        res.status(200).json(updatedStudent);
+        res.status(200);
     })
     .catch(err => {
         console.log(err);
@@ -172,10 +172,10 @@ router.delete('/:studentId', (req, res) => {
        .then(student => {
            if(!student) {
                req.flash('error', 'student not found');
-               res.status(404).send();
+               res.status(404);
            } else {
              req.flash("success", "student was deleted");
-             res.status(200).json(student);
+             res.status(200);
            }
        })
        .catch(err => {
