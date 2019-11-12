@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).send();
     });
 });
 
@@ -26,7 +26,7 @@ router.get('/:cohortId', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).send();
     });
 })
 
@@ -37,12 +37,21 @@ router.get('/create', (req, res) => {
 
 //Handle Cohort Creation
 router.post('/create', (req, res) => {
-    const {name, dateStart, dateEnd, students, instructors} = req.body;
+    var {
+      name,
+      dateStart,
+      dateEnd,
+      students,
+      instructors,
+      city,
+      state,
+      country
+    } = req.body;
 
     //Check required fields
     if(!name) {
-        req.flash({error: 'user already exists'});
-        res.status(500);
+        req.flash('error', 'please fill in the name field');
+        res.status(500).send();
     }
 
     //Creating a new Cohort
@@ -50,6 +59,11 @@ router.post('/create', (req, res) => {
         name: name,
         dateStart: dateStart,
         dateEnd: dateEnd,
+        address: {
+            city: city,
+            state: state,
+            country: country
+        },
         students: students,
         instructors: instructors
     });
@@ -57,12 +71,78 @@ router.post('/create', (req, res) => {
     //Saving new Cohort
     newCohort.save()
     .then(cohort => {
-        req.flash({success: 'cohort created'});
-        res.status(200);
+        req.flash('success', 'cohort created');
+        res.status(200).send();
     })
     .catch(err => {
         console.log(err);
-         return res.status(500);
+         return res.status(500).send();
+    });
+});
+
+//Handle updating cohort
+router.patch('/cohortId', (req, res) => {
+    var id = req.params.cohortId;
+    var {
+          name,
+          dateStart,
+          dateEnd,
+          students,
+          instructors,
+          city,
+          state,
+          country
+        } = req.body;
+    Cohort.updateOne({_id: id}, 
+        {
+            $set: {
+                name: name,
+                dateStart: dateStart,
+                dateEnd: dateEnd,
+                address: {
+                    city: city,
+                    state: state,
+                    country: country
+                },
+                students: students,
+                instructors: instructors
+            }
+        },
+      { upsert: true, multi: true }
+    )
+    .exec()
+    .then(updatedCohort => {
+        if(!updatedCohort) {
+            req.flash('error', 'cohort not found')
+            res.status(400).send();
+        } else {
+            req.flash('success', 'cohort updated');
+            res.status(200).send();
+        }
+    })
+    .catch( err => {
+        console.log(err);
+        return res.status(500).send();
+    });
+});
+
+//Handle deleting cohort
+router.delete('/:cohortId', (req, res) => {
+    var id = req.params.cohortId;
+    Cohort.deleteOne({_id: id})
+    .exec()
+    .then(cohort => {
+        if(!cohort) {
+            req.flash('error', 'cohort not found');
+            res.status(404).send();
+        } else {
+            req.flash('success', 'cohort was deleted');
+            res.status(200).send();
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).send()
     });
 });
 

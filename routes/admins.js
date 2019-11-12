@@ -31,8 +31,8 @@ router.get('/:adminId', (req, res) => {
             console.log(admin);
             res.status(200).json(admin);
         } else {
-            req.flash('error', 'Admin not found');
-            res.status(404);
+            req.flash('error', 'admin not found');
+            res.status(404).send();
         }
     })
     .catch(err => {
@@ -145,21 +145,22 @@ router.patch('/:adminId', (req, res) => {
       {
         $set: {
             name: { //Receiving update data from the request body
-                    firstName: req.body.newFirstName,
-                    lastName: req.body.newLastName,
+                    firstName: req.body.firstName,
+                    lastName: req.body.lastName,
             },
-          email: req.body.newEmail
+          email: req.body.email
         }
       },
-      { upsert: true, multi: true },
+      { upsert: true, multi: true }
     )
       .exec()
       .then(updatedAdmin => {
         if (!updatedAdmin) {
+            req.flash('error', 'admin not found')
           res.status(404).send();
         } else {
           console.log(updatedAdmin);
-          req.flash("success", "document updated");
+          req.flash("success", 'admin updated');
           res.status(200).send();
         }
       })
@@ -171,17 +172,22 @@ router.patch('/:adminId', (req, res) => {
 
 // //Handle deleting an admin
 router.delete('/:adminId', (req, res) => {
-    const id = req.params.adminId;
+    var id = req.params.adminId;
     //Using id provided to find one to delete
     Admin.deleteOne({_id: id})
     .exec()
-    .then(result => {
-        req.flash('success', 'admin was deleted');
-        res.status(200).send();
+    .then(admin => {
+        if(!admin) {
+            req.flash('error', 'admin not found');
+            res.status(404).send();
+        } else {
+            req.flash('success', 'admin was deleted');
+            res.status(200).send();
+        }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).send();
     });
 });
 
