@@ -61,7 +61,7 @@ router.get('/swoop', (req, res) => {
             //Email auth and setting key
             if(admin) {
                 admin.loginKey = key;
-                req.headers['key'] = key;
+                req.session = key;
                 res.status(200).json({success: true, email: email, key: key});
             } else {
                 req.flash('error', 'admin not found');
