@@ -87,7 +87,7 @@ router.get('/register', (req, res) => {
 //Handle Register
 router.post('/register', (req, res) => {
     //Define variables from request body
-    const { firstName, lastName, email } = req.body;
+    var { firstName, lastName, email } = req.body;
     console.log(req.body);
     //Check required fields
     if (!firstName || !lastName || !email) {
@@ -137,42 +137,42 @@ router.post('/logout', (req, res) => {
 });
 
 // //Handle updating an admin
-router.put('/:adminId', (req, res) => {
+router.patch('/:adminId', (req, res) => {
     var id = req.params.adminId;
-    Admin.findOne({_id: id}, (err, admin) => {
-        if(err) {
-            console.log(err);
-            res.status(500).send();
-        } else {
-            if(!admin) {
-                res.status(404).send();
-            } else {
-                if(req.body.fistName) {
-                    admin.firstName = req.body.firstName;
-                }
-                if(req.body.lastName) {
-                    admin.lastName = req.body.lastName;
-                } 
-                if(req.body.email) {
-                    admin.email = req.body.email;
-                }
-                admin.save()
-                .then( updatedAdmin => {
-                    console.log(updatedAdmin);
-                    res.status(200).json(updatedAdmin);
-                })
-                .catch(err => {
-                    console.log(err);
-                    return res.status(500).send();
-                });
-            }
+    //Finding one to update
+    Admin.updateOne(
+      { _id: id },
+      {
+        $set: {
+            name: { //Receiving update data from the request body
+                    firstName: req.body.newFirstName,
+                    lastName: req.body.newLastName,
+            },
+          email: req.body.newEmail
         }
-    });
+      },
+      { upsert: true, multi: true },
+    )
+      .exec()
+      .then(updatedAdmin => {
+        if (!updatedAdmin) {
+          res.status(404).send();
+        } else {
+          console.log(updatedAdmin);
+          req.flash("success", "document updated");
+          res.status(200).send();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+        return res.status(500).send();
+      });
 });
 
 // //Handle deleting an admin
 router.delete('/:adminId', (req, res) => {
     const id = req.params.adminId;
+    //Using id provided to find one to delete
     Admin.deleteOne({_id: id})
     .exec()
     .then(result => {
