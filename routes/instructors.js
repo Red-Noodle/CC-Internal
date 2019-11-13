@@ -7,7 +7,7 @@ const Instructor = require('../models/Instructor');
 //Get all instructors
 router.get('/', (req, res) => {
     Instructor.find()
-    .sort({field: 'asc'})
+    .populate('cohort', 'name')
     .exec()
     .then(instructors => {
         res.status(200).json(instructors);
@@ -22,6 +22,7 @@ router.get('/', (req, res) => {
 router.get('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     Instructor.findById({_id: id})
+    .populate('cohort')
     .exec()
     .then(instructor => {
         if(!instructor) {
@@ -47,7 +48,7 @@ router.get('/register', (req, res) => {
 });
 
 //Handle Register
-router.post('/register', (req, res) => {
+router.post('/instructor/register', (req, res) => {
         const {
           firstName,
           lastName,
@@ -63,13 +64,15 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return req.flash('error', 'fill in name and email fields');
+        req.flash('error', 'fill in name and email fields');
+        res.status(500).redirect('localhost:3000/instructorAdd.html');
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
             if(instructor) {
                 //Instructor exists
-                return req.flash('error', 'instructor already exists');
+                req.flash('error', 'instructor already exists');
+                res.status(500).redirect("localhost:3000/instructorAdd.html");
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -95,17 +98,21 @@ router.post('/register', (req, res) => {
                     .then(instructor => {
                         //Success
                         req.flash('success', 'instructor registered');
-                        res.status(200);
+                        res
+                          .status(200)
+                          .redirect("localhost:3000/instructorAdd.html");
                     })
                     .catch(err => {
                         console.log(err);
-                        res.status(500);
+                        return res
+                          .status(500)
+                          .redirect("localhost:3000/instructorAdd.html");
                     });
             }
         })
             .catch(err => {
                 console.log(err);
-                res.status(500);
+                res.status(500).redirect("localhost:3000/instructorAdd.html");
             });
     }
 });
@@ -151,34 +158,35 @@ router.patch('/:instructorId', (req, res) => {
     .then(updatedInstructor => {
         if(!updatedInstructor) {
             req.flash('instructor not found');
-            res.status(404);
+            res.status(404).redirect("localhost:3000/instructorAdd.html");
         } else {
-            res.status(200);
+            req.flash('success', 'instructor deleted');
+            res.status(200).redirect("localhost:3000/instructorAdd.html");
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("localhost:3000/instructorAdd.html");
     });
 });
 
 //Handle deleting instructor
 router.delete('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
-    Instructor.delete({_id: id})
+    Instructor.deleteOne({_id: id})
     .exec()
     .then(instructor => {
         if(!instructor) {
             req.flash('error', 'instructor not found');
-            res.status(404);
+            res.status(404).redirect("localhost:3000/instructorAdd.html");
         } else {
             req.flash('success', 'instructor deleted');
-            res.status(200);
+            res.status(200).redirect("localhost:3000/instructorAdd.html");
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("localhost:3000/instructorAdd.html");
     });
 });
 

@@ -31,21 +31,21 @@ router.get('/:adminId', (req, res) => {
             res.status(200).json(admin);
         } else {
             req.flash('error', 'admin not found');
-            res.status(404).send();
+            res.status(404);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("localhost:3000/instructorAdd.html");;
     });
 });
 
-router.get('/login', (req, res) => {
-    
-});
+router.get('/admin/login', (req, res) => {
+    res.render('../views/login.html');
+})
 
 //Swoop Login
-router.get('/swoop', (req, res) => {
+router.get('/login/swoop', (req, res) => {
     //receive an id from swoop
     const key = req.query.id;
 
@@ -60,11 +60,10 @@ router.get('/swoop', (req, res) => {
             //Email auth and setting key
             if(admin) {
                 admin.loginKey = key;
-                req.session.secret = key;
-                res.status(200);
+                    res.status(200).redirect('http://localhost:3000/');
             } else {
                 req.flash('error', 'admin not found');
-                res.status(500);
+                res.status(500).redirect('http://localhost:3000/login.html');
             }
         })
         .catch(err => {
@@ -84,14 +83,14 @@ router.get('/register', (req, res) => {
 });
 
 //Handle Register
-router.post('/register', (req, res) => {
+router.post('/admin/register', (req, res) => {
     //Define variables from request body
     var { firstName, lastName, email } = req.body;
     console.log(req.body);
     //Check required fields
     if (!firstName || !lastName || !email) {
         req.flash("error", "fill in name and email fields");
-        res.status(500);
+        res.status(500).redirect('http://localhost:3000/adminAdd.html');
     } else {
         // checking if admin already exists
        Admin.findOne({email: email})
@@ -99,7 +98,7 @@ router.post('/register', (req, res) => {
            if(admin) {
                // sending a message if admin does exist
                req.flash('error', 'admin already exists');
-               res.status(500).send();
+               res.status(500).redirect('http://localhost:3000/adminAdd.html');
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -113,26 +112,29 @@ router.post('/register', (req, res) => {
                     .then(admin => {
                         console.log(admin);
                         req.flash('success', 'admin registered');
-                        return res.status(200);
+                        return res.status(200).redirect('http://localhost:3000/adminAdd.html');
                     })
                     .catch(err => {
                        console.log(err);
-                       return res.status(500);
+                       req.flash('error', err)
+                       return res.status(500).redirect('http://localhost:3000/adminAdd.html');
                    });
            }
        })
        .catch(err => {
            console.log(err);
-           return res.status(500);
+           req.flash('error', err);
+           return res.status(500).redirect('localhost:3000/adminAdd.html');
       });
     }
 });
 
 //Handle Logout
-router.post('/logout', (req, res) => {
+router.get('/admin/logout', (req, res) => {
     req.logOut();
     //destroy the current session and redirect to the login page
     req.session.destroy();
+    res.status(200).redirect('http://localhost:3000/login.html');
 });
 
 // //Handle updating an admin
@@ -152,20 +154,19 @@ router.patch('/:adminId', (req, res) => {
       },
       { upsert: true, multi: true }
     )
-      .exec()
-      .then(updatedAdmin => {
+    .exec()
+    .then(updatedAdmin => {
         if (!updatedAdmin) {
-            req.flash('error', 'admin not found')
-          res.status(404);
+            req.flash('error', 'admin not found');
+          res.status(404).redirect("http://localhost:3000/adminAdd.html");
         } else {
-          console.log(updatedAdmin);
           req.flash("success", 'admin updated');
-          res.status(200);
+          res.status(200).redirect('http://localhost:3000/adminAdd.html');
         }
       })
       .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("http://localhost:3000/adminAdd.html");
       });
 });
 
@@ -178,15 +179,15 @@ router.delete('/:adminId', (req, res) => {
     .then(admin => {
         if(!admin) {
             req.flash('error', 'admin not found');
-            res.status(404);
+            res.status(404).redirect("http://localhost:3000/adminAdd.html");
         } else {
             req.flash('success', 'admin was deleted');
-            res.status(200);
+            res.status(200).redirect("http://localhost:3000/adminAdd.html");
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("http://localhost:3000/adminAdd.html");
     });
 });
 

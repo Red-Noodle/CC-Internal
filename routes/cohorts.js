@@ -7,6 +7,8 @@ const Cohort = require('../models/Cohort');
 //Get all cohorts
 router.get('/', (req, res) => {
     Cohort.find()
+    .populate('students')
+    .populate('instructors')
     .exec()
     .then(cohorts => {
         res.status(200).json(cohorts);
@@ -21,6 +23,8 @@ router.get('/', (req, res) => {
 router.get('/:cohortId', (req, res) => {
     var id = req.params.cohortId;
     Cohort.findById({_id: id})
+    .populate('students')
+    .populate('instructors')
     .exec()
     .then(cohort => {
         res.status(200).json(cohort);
@@ -32,12 +36,12 @@ router.get('/:cohortId', (req, res) => {
 })
 
 //Create Page
-router.get('/create', (req, res) => {
+router.get('/cohort/create', (req, res) => {
     
 });
 
 //Handle Cohort Creation
-router.post('/create', (req, res) => {
+router.post('/cohort/create', (req, res) => {
     var {
       name,
       dateStart,
@@ -51,7 +55,7 @@ router.post('/create', (req, res) => {
     //Check required fields
     if(!name) {
         req.flash('error', 'please fill in the name field');
-        return res.status(500);
+        res.status(500).redirect("localhost:3000/cohortAdd.html");
     }
 
     //Creating a new Cohort
@@ -71,7 +75,7 @@ router.post('/create', (req, res) => {
     newCohort.save()
     .then(cohort => {
         req.flash('success', 'cohort created');
-        return res.status(200);
+        res.status(200).redirect("localhost:3000/cohortAdd.html");
     })
     .catch(err => {
         console.log(err);
@@ -111,15 +115,15 @@ router.patch('/cohortId', (req, res) => {
     .then(updatedCohort => {
         if(!updatedCohort) {
             req.flash('error', 'cohort not found')
-            res.status(404);
+            res.status(404).redirect("localhost:3000/cohortAdd.html");
         } else {
             req.flash('success', 'cohort updated');
-            res.status(200);
+            res.status(200).redirect("localhost:3000/cohortAdd.html");
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("localhost:3000/cohortAdd.html");
     });
 });
 
@@ -131,15 +135,15 @@ router.delete('/:cohortId', (req, res) => {
     .then(cohort => {
         if(!cohort) {
             req.flash('error', 'cohort not found');
-            res.status(404);
+            res.status(404).redirect("localhost:3000/cohortAdd.html");
         } else {
             req.flash('success', 'cohort was deleted');
-            res.status(200);
+            res.status(200).redirect("localhost:3000/cohortAdd.html");
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).redirect("localhost:3000/cohortAdd.html");
     });
 });
 

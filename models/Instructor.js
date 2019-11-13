@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Cohort = require('./Cohort');
 
+//Cohort Model
+const Cohort = require('./Cohort');
 
 const instructorSchema = new Schema({
     name: {
@@ -17,8 +18,7 @@ const instructorSchema = new Schema({
         zip: { type: String, trim: true, default: ""}
     },
     phone: { type: String, trim: true, default: ""},
-    cohort: String
-//[{type: Schema.Types.ObjectId, ref: 'Cohort'}],
+    cohort: [{type: mongoose.Types.ObjectId, ref: 'Cohort'}]
 });
 
 var Instructor = mongoose.model("Instructor", instructorSchema);
