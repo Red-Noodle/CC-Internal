@@ -27,7 +27,7 @@ router.get('/:studentId', (req, res) => {
       .then(student => {
         if (!student) {
           req.flash("error", "student not found");
-          res.status(404);
+          res.status(404).redirect('http://localhost:3000/studentAdd.html');
         } else {
           res.status(200).json(student);
         }
@@ -36,18 +36,6 @@ router.get('/:studentId', (req, res) => {
         console.log(err);
         return res.status(500);
       });
-});
-
-//Login Page
-router.get('/login', (req, res) => {
-});
-
-//Handle Login
-router.post('/login', (err, res) => {
-});
-
-//Register Page
-router.get('/register', (req, res) => {
 });
 
 //Handle Register
@@ -68,14 +56,16 @@ router.post('/student/register', (req, res) => {
     //Check required fields
     if (!firstName || !lastName || !email) {
         req.flash('error', 'fill name and email fields');
-        res.status(500).redirect("localhost:3000/studentAdd.html");
+        res.status(500).redirect("http://localhost:3000/studentAdd.html");
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
         .then(student => {
             if(student) {
                 req.flash('error', 'student already exists');
-                res.status(500).redirect("localhost:3000/studentAdd.html");
+                res
+                  .status(500)
+                  .redirect("http://localhost:3000/studentAdd.html");
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -102,13 +92,13 @@ router.post('/student/register', (req, res) => {
                          req.flash('success', 'student registered');
                          res
                            .status(200)
-                           .redirect("localhost:3000/studentAdd.html");
+                           .redirect("http://localhost:3000/studentAdd.html");
                      })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .redirect("localhost:3000/studentAdd.html");
+                          .redirect("http://localhost:3000/studentAdd.html");
                     });
 
             }
@@ -117,7 +107,7 @@ router.post('/student/register', (req, res) => {
                 console.log(err)
                 return res
                   .status(500)
-                  .redirect("localhost:3000/studentAdd.html");
+                  .redirect("http://localhost:3000/studentAdd.html");
             })
     }
 });
@@ -138,7 +128,7 @@ router.patch('/:studentId', (req, res) => {
           phone,
           cohort
         } = req.body;
-
+        console.log(req.body);
     Student.updateOne({_id: id}, 
         {
             $set: {
@@ -164,16 +154,16 @@ router.patch('/:studentId', (req, res) => {
     .then(updatedStudent => {
         if(!updatedStudent) {
             req.flash('error', 'admin not found');
-            res.status(404).redirect("localhost:3000/studentAdd.html");
+            res.status(404).redirect("http://localhost:3000/studentAdd.html");
         } else {
             console.log(updatedStudent);
             req.flash('success', 'student updated');
-            res.status(200).redirect("localhost:3000/studentAdd.html");
+            res.status(200).redirect("http://localhost:3000/studentAdd.html");
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).redirect("localhost:3000/studentAdd.html");
+        return res.status(500).redirect("http://localhost:3000/studentAdd.html");
     });
 });
 
@@ -186,15 +176,17 @@ router.delete('/:studentId', (req, res) => {
        .then(student => {
            if(!student) {
                req.flash('error', 'student not found');
-               res.status(404).redirect("localhost:3000/studentAdd.html");
+               res.status(404).redirect("http://localhost:3000/studentAdd.html");
            } else {
              req.flash("success", "student was deleted");
-             return res.status(200).redirect("localhost:3000/studentAdd.html");
+             return res.status(200).redirect("http://localhost:3000/studentAdd.html");
            }
        })
        .catch(err => {
          console.log(err);
-         return res.status(500).redirect("localhost:3000/studentAdd.html");
+         return res
+           .status(500)
+           .redirect("http://localhost:3000/studentAdd.html");
        });
 });
 

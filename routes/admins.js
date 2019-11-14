@@ -9,15 +9,29 @@ const Admin = require('../models/Admin');
 
 //Get all Admins
 router.get('/', (req, res) => {
-    Admin.find()
+    var key = req.headers.key;
+    Admin.findOne({loginKey: key})
     .exec()
-    .then(admins => {
-        res.status(200).json(admins);
+    .then(admin => {
+        if(!admin) {
+            res.redirect('http://localhost:3000/login.html');
+        } else {
+         Admin.find()
+           .exec()
+           .then(admins => {
+             res.status(200).json(admins);
+           })
+           .catch(err => {
+             console.log(err);
+             return res.status(500);
+           });
+        }
     })
     .catch(err => {
         console.log(err);
         return res.status(500);
-    });
+    })
+     
 });
 
 //Get admin by id
@@ -31,12 +45,12 @@ router.get('/:adminId', (req, res) => {
             res.status(200).json(admin);
         } else {
             req.flash('error', 'admin not found');
-            res.status(404);
+            res.status(404).redirect('http://localhost:3000/adminAdd.html');
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).redirect("localhost:3000/instructorAdd.html");;
+        return res.status(500).redirect("http://localhost:3000/adminAdd.html");;
     });
 });
 
@@ -60,6 +74,8 @@ router.get('/login/swoop', (req, res) => {
             //Email auth and setting key
             if(admin) {
                 admin.loginKey = key;
+                req.headers.key = key;
+                console.log(req.headers.key);
                     res.status(200).redirect('http://localhost:3000/');
             } else {
                 req.flash('error', 'admin not found');
