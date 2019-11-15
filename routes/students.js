@@ -6,6 +6,7 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
+  var key = req.headers.key;
     Student.find()
       .populate("cohort")
       .exec()
@@ -14,7 +15,7 @@ router.get('/', (req, res) => {
       })
       .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).json({error: err});
       });
 });
 
@@ -26,15 +27,14 @@ router.get('/:studentId', (req, res) => {
       .exec()
       .then(student => {
         if (!student) {
-          req.flash("error", "student not found");
-          res.status(404).redirect('http://localhost:3000/studentAdd.html');
+          res.status(404).json({success: false, message: 'student not found'});
         } else {
           res.status(200).json(student);
         }
       })
       .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).json({error: err});
       });
 });
 
@@ -55,17 +55,15 @@ router.post('/student/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        req.flash('error', 'fill name and email fields');
-        res.status(500).redirect("http://localhost:3000/studentAdd.html");
+        res.status(500).json({success: false, message: 'fill name and email fields'});
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
         .then(student => {
             if(student) {
-                req.flash('error', 'student already exists');
                 res
                   .status(500)
-                  .redirect("http://localhost:3000/studentAdd.html");
+                  .json({success: false, message: 'student already exists'});
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -89,16 +87,15 @@ router.post('/student/register', (req, res) => {
                 //Save new Student
                 newStudent.save()
                      .then(student => {
-                         req.flash('success', 'student registered');
                          res
                            .status(200)
-                           .redirect("http://localhost:3000/studentAdd.html");
+                           .json({success: true, message: 'student registered'});
                      })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .redirect("http://localhost:3000/studentAdd.html");
+                          .json({error: err});
                     });
 
             }
@@ -107,7 +104,7 @@ router.post('/student/register', (req, res) => {
                 console.log(err)
                 return res
                   .status(500)
-                  .redirect("http://localhost:3000/studentAdd.html");
+                  .json({error: err});
             })
     }
 });
@@ -128,7 +125,6 @@ router.patch('/:studentId', (req, res) => {
           phone,
           cohort
         } = req.body;
-        console.log(req.body);
     Student.updateOne({_id: id}, 
         {
             $set: {
@@ -153,40 +149,36 @@ router.patch('/:studentId', (req, res) => {
     .exec()
     .then(updatedStudent => {
         if(!updatedStudent) {
-            req.flash('error', 'admin not found');
-            res.status(404).redirect("http://localhost:3000/studentAdd.html");
+            res.status(404).json({success: false, message: 'student not found'});
         } else {
             console.log(updatedStudent);
-            req.flash('success', 'student updated');
-            res.status(200).redirect("http://localhost:3000/studentAdd.html");
+            res.status(200).json({success: true, message: 'student registered'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).redirect("http://localhost:3000/studentAdd.html");
+        return res.status(500).json({error: err});
     });
 });
 
 //Handle Delete
-router.delete('/:studentId', (req, res) => {
-    var id = req.params.studentId;
+router.delete('/:studentEmail', (req, res) => {
+    var email = req.params.studentEmail;
      //Using id provided to find one to delete
-     Student.deleteOne({ _id: id })
+     Student.deleteOne({ email: email })
        .exec()
        .then(student => {
            if(!student) {
-               req.flash('error', 'student not found');
-               res.status(404).redirect("http://localhost:3000/studentAdd.html");
+               res.status(404).json({success: false, message: 'student not found'});
            } else {
-             req.flash("success", "student was deleted");
-             return res.status(200).redirect("http://localhost:3000/studentAdd.html");
+             return res.status(200).json({success: true, message: 'student was deleted'});
            }
        })
        .catch(err => {
          console.log(err);
          return res
            .status(500)
-           .redirect("http://localhost:3000/studentAdd.html");
+           .json({error: err});
        });
 });
 
