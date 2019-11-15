@@ -76,7 +76,6 @@ router.get('/login/swoop', (req, res) => {
     .then(response => {
         //Receive email from swoop
         var email = response.data;
-        console.log(email);
         Admin.findOne({email: email})
         .exec()
         .then(admin => {
@@ -166,8 +165,27 @@ router.post('/register', (req, res) => {
 
 //Handle Logout
 router.get('/logout', (req, res) => {
-    process.env.SWOOP_KEY = "";
-    res.json({success: true});
+    Admin.updateOne(
+      { loginKey: process.env.SWOOP_KEY },
+      {
+        $set: {
+          name: {
+            firstName: admin.name.firstName,
+            lastName: admin.name.lastName
+          },
+          email: email,
+          loginKey: ""
+        }
+      },
+      { upsert: true, multi: true }
+    )
+      .exec()
+      .then(updatedAdmin => {
+        res
+          .status(200)
+          .json({ success: true, message: "succesfully logged out" });
+      })
+      .catch(err => console.log(err));
 });
 
 // //Handle updating an admin
