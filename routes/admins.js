@@ -1,24 +1,47 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const passport = require('passport');
-const mongoose = require('mongoose');
 
 
 //Admin Model
 const Admin = require('../models/Admin');
 
-//Get all Admins
-router.get('/', (req, res) => {
-    Admin.find()
+//Get Key
+router.get('/key', (req, res) => {
+    res.status(200).json(process.env.SWOOP_KEY);
+});
+
+//Verify Key
+router.get('/key/:key', (req, res) => {
+    var key = req.params.key;
+    Admin.findOne({loginKey: key})
     .exec()
-    .then(admins => {
-        res.status(200).json(admins);
+    .then(admin => {
+        if(!admin) {
+            res.status(404).json({success: false, message: 'admin not found'});
+        } else {
+            res.status(200).json({success: true});
+        }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
-    });
+        return res.status(500).json({error: err});
+    })
+});
+
+//Get all Admins
+router.get('/', (req, res) => {
+    
+     Admin.find()
+        .exec()
+        .then(admins => {
+            res.status(200).json(admins);
+        })
+        .catch(err => {
+            console.log(err);
+            return res.status(500).json({error: err});
+        });
+     
 });
 
 //Get admin by id
@@ -28,28 +51,26 @@ router.get('/:adminId', (req, res) => {
     .exec()
     .then(admin => {
         if(admin) {
-            console.log(admin);
             res.status(200).json(admin);
         } else {
             req.flash('error', 'admin not found');
-            res.status(404).send();
+            res.status(404).json({success: false, message: 'admin not found'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500);
+        return res.status(500).json({error: err});
     });
 });
 
 router.get('/login', (req, res) => {
-    
-});
+    res.render('../views/login.html');
+})
 
 //Swoop Login
-router.get('/swoop', (req, res) => {
+router.get('/login/swoop', (req, res) => {
     //receive an id from swoop
-    const key = req.query.id;
-
+    var key = req.query.id;
     //validating id and getting email address
     axios.get(process.env.SWOOP_LOGIN_LINK + key)
     .then(response => {
@@ -60,22 +81,39 @@ router.get('/swoop', (req, res) => {
         .then(admin => {
             //Email auth and setting key
             if(admin) {
-                admin.loginKey = key;
-                req.session.secret = key;
-                res.status(200).json({success: true, email: email, key: key});
+                process.env.SWOOP_KEY = key;
+                Admin.updateOne(
+                  { _id: admin._id },
+                  {
+                    $set: {
+                      name: {
+                        firstName: admin.name.firstName,
+                        lastName: admin.name.lastName
+                      },
+                      email: admin.email,
+                      loginKey: key
+                    }
+                  },
+                  { upsert: true, multi: true }
+                )
+                .exec()
+                .then(data => {
+                    res.status(200).redirect('http://localhost:3000/')
+                })
+                .catch(err => {return console.log(err)});
             } else {
                 req.flash('error', 'admin not found');
-                res.status(500);
+                res.status(404).redirect('http://localhost:3000/login.html');
             }
         })
         .catch(err => {
             console.log(err);
-            return res.status(404);
+            return res.status(500).end();
         });
     })
     .catch(err => {
         console.log(err);
-        return res.status(404);
+        return res.status(500).end();
     });
 });
 
@@ -88,19 +126,16 @@ router.get('/register', (req, res) => {
 router.post('/register', (req, res) => {
     //Define variables from request body
     var { firstName, lastName, email } = req.body;
-    console.log(req.body);
     //Check required fields
     if (!firstName || !lastName || !email) {
-        req.flash("error", "fill in name and email fields");
-        res.status(500);
+        res.status(500).json({success: false, message: 'fill in name and email fields'});
     } else {
         // checking if admin already exists
        Admin.findOne({email: email})
        .then(admin => {
            if(admin) {
                // sending a message if admin does exist
-               req.flash('error', 'admin already exists');
-               return res.status(500).send();
+               res.status(500).json({success: false, message: 'admin already exists'});
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -108,36 +143,53 @@ router.post('/register', (req, res) => {
                        firstName: firstName,
                        lastName: lastName
                    },
-                   email: email,
+                   email: email
                    //save new admin
                }).save()
                     .then(admin => {
-                        console.log(admin);
-                        req.flash('success', 'admin registered');
-                        res.status(200).send();
+                        return res.status(200).json({success: true, message: 'admin successfully registered'});
                     })
                     .catch(err => {
                        console.log(err);
-                       return res.status(500).send();
+                       req.flash('error', err)
+                       return res.status(500).json({error: err});
                    });
            }
        })
        .catch(err => {
            console.log(err);
-           return res.status(500).send();
+           return res.status(500).json({error: err});
       });
     }
 });
 
 //Handle Logout
-router.post('/logout', (req, res) => {
-    req.logOut();
-    //destroy the current session and redirect to the login page
-    req.session.destroy();
+router.get('/auth/logout', (req, res) => {
+    Admin.updateOne(
+      { loginKey: process.env.SWOOP_KEY },
+      {
+        $set: {
+          name: {
+            firstName: admin.name.firstName,
+            lastName: admin.name.lastName
+          },
+          email: email,
+          loginKey: ""
+        }
+      },
+      { upsert: true, multi: true }
+    )
+      .exec()
+      .then(updatedAdmin => {
+        res
+          .status(200)
+          .json({ success: true, message: "succesfully logged out" });
+      })
+      .catch(err => console.log(err));
 });
 
 // //Handle updating an admin
-router.patch('/:adminId', (req, res) => {
+router.post('/:adminId', (req, res) => {
     var id = req.params.adminId;
     //Finding one to update
     Admin.updateOne(
@@ -153,20 +205,19 @@ router.patch('/:adminId', (req, res) => {
       },
       { upsert: true, multi: true }
     )
-      .exec()
-      .then(updatedAdmin => {
+    .exec()
+    .then(updatedAdmin => {
         if (!updatedAdmin) {
-            req.flash('error', 'admin not found')
-          res.status(404).send();
+            req.flash('error', 'admin not found');
+          res.status(404).json({success: false, message: 'admin not found'});
         } else {
-          console.log(updatedAdmin);
           req.flash("success", 'admin updated');
-          res.status(200).send();
+          res.status(200).json({success: true, message: 'admin updated'});
         }
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500).json({error: err});
       });
 });
 
@@ -179,15 +230,15 @@ router.delete('/:adminId', (req, res) => {
     .then(admin => {
         if(!admin) {
             req.flash('error', 'admin not found');
-            res.status(404).send();
+            res.status(404).json({success: false, message: 'admin not found'});
         } else {
             req.flash('success', 'admin was deleted');
-            res.status(200).send();
+            res.status(200).json({success: true, message: 'admin was deleted'});
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500).json({error: err});
     });
 });
 

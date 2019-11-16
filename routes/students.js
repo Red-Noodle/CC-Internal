@@ -6,50 +6,40 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
+  var key = req.headers.key;
     Student.find()
-    .exec()
-    .then(students => {
+      .populate("cohort")
+      .exec()
+      .then(students => {
         res.status(200).json(students);
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         console.log(err);
-        return res.status(500).send();
-    });
+        return res.status(500).json({error: err});
+      });
 });
 
 // Get a student by id
 router.get('/:studentId', (req, res) => {
     var id = req.params.studentId;
-    Student.findById({_id: id})
-    .exec()
-    .then(student => {
-        if(!student) {
-            req.flash('error', 'student not found');
-            res.status(404).send();
+    Student.findById({ _id: id })
+      .populate("cohort")
+      .exec()
+      .then(student => {
+        if (!student) {
+          res.status(404).json({success: false, message: 'student not found'});
         } else {
-            res.status(200).json(student);
+          res.status(200).json(student);
         }
-    })
-    .catch( err => {
+      })
+      .catch(err => {
         console.log(err);
-        return res.status(500).send();
-    });
-});
-
-//Login Page
-router.get('/login', (req, res) => {
-});
-
-//Handle Login
-router.post('/login', (err, res) => {
-});
-
-//Register Page
-router.get('/register', (req, res) => {
+        return res.status(500).json({error: err});
+      });
 });
 
 //Handle Register
-router.post('/register', (req, res) => {
+router.post('/student/register', (req, res) => {
     const {
       firstName,
       lastName,
@@ -65,14 +55,15 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        req.flash('error', 'fill name and email fields');
-        res.status(500).send();
+        res.status(500).json({success: false, message: 'fill name and email fields'});
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
         .then(student => {
             if(student) {
-                req.flash('error', 'student already exists');
+                res
+                  .status(500)
+                  .json({success: false, message: 'student already exists'});
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -96,19 +87,24 @@ router.post('/register', (req, res) => {
                 //Save new Student
                 newStudent.save()
                      .then(student => {
-                         req.flash('success', 'student registered');
-                         res.status(200).send();
+                         res
+                           .status(200)
+                           .json({success: true, message: 'student registered'});
                      })
                     .catch(err => {
                         console.log(err);
-                        return res.status(500).send();
+                        return res
+                          .status(500)
+                          .json({error: err});
                     });
 
             }
         })
             .catch(err => {
                 console.log(err)
-                return res.status(500).send();
+                return res
+                  .status(500)
+                  .json({error: err});
             })
     }
 });
@@ -129,7 +125,6 @@ router.patch('/:studentId', (req, res) => {
           phone,
           cohort
         } = req.body;
-
     Student.updateOne({_id: id}, 
         {
             $set: {
@@ -153,33 +148,37 @@ router.patch('/:studentId', (req, res) => {
     )
     .exec()
     .then(updatedStudent => {
-        req.flash('success', 'student updated');
-        res.status(200).send();
+        if(!updatedStudent) {
+            res.status(404).json({success: false, message: 'student not found'});
+        } else {
+            console.log(updatedStudent);
+            res.status(200).json({success: true, message: 'student registered'});
+        }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send()
+        return res.status(500).json({error: err});
     });
 });
 
 //Handle Delete
-router.delete('/:studentId', (req, res) => {
-     const id = req.params.adminId;
+router.delete('/:studentEmail', (req, res) => {
+    var email = req.params.studentEmail;
      //Using id provided to find one to delete
-     Student.deleteOne({ _id: id })
+     Student.deleteOne({ email: email })
        .exec()
        .then(student => {
            if(!student) {
-               req.flash('error', 'student not found');
-               res.status(404).send();
+               res.status(404).json({success: false, message: 'student not found'});
            } else {
-             req.flash("success", "student was deleted");
-             res.status(200).send();
+             return res.status(200).json({success: true, message: 'student was deleted'});
            }
        })
        .catch(err => {
          console.log(err);
-         return res.status(500);
+         return res
+           .status(500)
+           .json({error: err});
        });
 });
 

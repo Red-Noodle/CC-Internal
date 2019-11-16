@@ -1,18 +1,20 @@
 const express = require('express');
 const router = express.Router();
 
+//Instructor Model
 const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
     Instructor.find()
+    .populate('cohort', 'name')
     .exec()
     .then(instructors => {
         res.status(200).json(instructors);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res.status(500).json({error: err});
     });
 });
 
@@ -20,18 +22,20 @@ router.get('/', (req, res) => {
 router.get('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     Instructor.findById({_id: id})
+    .populate('cohort')
     .exec()
     .then(instructor => {
         if(!instructor) {
-            req.flash('error', 'instructor not found');
-            res.status(400).send();
+            res.status(400).json({success: false, message: 'instrutor not found'});
         }else {
             res.status(200).json(instructor);
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res
+          .status(500)
+          .json({error: err});
     });
 });
 
@@ -45,7 +49,7 @@ router.get('/register', (req, res) => {
 });
 
 //Handle Register
-router.post('/register', (req, res) => {
+router.post('/instructor/register', (req, res) => {
         const {
           firstName,
           lastName,
@@ -61,13 +65,15 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        return req.flash('error', 'fill in name and email fields');
+        res.status(500).json({success: false, message: 'fill in name and email fields'});
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
             if(instructor) {
                 //Instructor exists
-                return req.flash('error', 'instructor already exists');
+                res
+                  .status(500)
+                  .json({success: false, message: 'instrutor already exists'});
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -92,24 +98,29 @@ router.post('/register', (req, res) => {
                 newInstructor.save()
                     .then(instructor => {
                         //Success
-                        req.flash('success', 'instructor registered');
-                        res.status(200).send();
+                        res
+                          .status(200)
+                          .json({success: true, message: 'instructor registered'});
                     })
                     .catch(err => {
                         console.log(err);
-                        res.status(500).send();
+                        return res
+                          .status(500)
+                          .json({error: err});
                     });
             }
         })
             .catch(err => {
                 console.log(err);
-                res.status(500).send();
+                res
+                  .status(500)
+                  .json({error: err});
             });
     }
 });
 
 //Handle updating instructor
-router.patch('/:instructorId', (req, res) => {
+router.post('/update/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     //Receivingn data from the request body
         const {
@@ -148,35 +159,44 @@ router.patch('/:instructorId', (req, res) => {
     .exec()
     .then(updatedInstructor => {
         if(!updatedInstructor) {
-            req.flash('instructor not found');
-            res.status(404).send();
+            res
+              .status(404)
+              .json({success: false, message: 'instructor not found'});
         } else {
-            res.status(200).send();
+            res
+              .status(200)
+              .json({success: true, message: 'instructor deleted'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res
+          .status(500)
+          .json({error: err});
     });
 });
 
 //Handle deleting instructor
-router.delete('/:instructorId', (req, res) => {
+router.delete('/delete/:instructorId', (req, res) => {
     var id = req.params.instructorId;
-    Instructor.delete({_id: id})
+    Instructor.deleteOne({_id: id})
     .exec()
     .then(instructor => {
         if(!instructor) {
-            req.flash('error', 'instructor not found');
-            res.status(404).send();
+            res
+              .status(404)
+              .json({success: false, message: 'instructor not found'});
         } else {
-            req.flash('success', 'instructor deleted');
-            res.status(200).send();
+            res
+              .status(200)
+              .json({success: true, message: 'instructor deleted'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).send();
+        return res
+          .status(500)
+          .json({error: err});
     });
 });
 
