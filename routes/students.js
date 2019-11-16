@@ -39,7 +39,7 @@ router.get('/:studentId', (req, res) => {
 });
 
 //Handle Register
-router.post('/student/register', (req, res) => {
+router.post('/register', (req, res) => {
     const {
       firstName,
       lastName,
@@ -55,7 +55,7 @@ router.post('/student/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).json({success: false, message: 'fill name and email fields'});
+        res.status(500).redirect('http://localhost:3000/studentAdd.html');
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
@@ -63,7 +63,7 @@ router.post('/student/register', (req, res) => {
             if(student) {
                 res
                   .status(500)
-                  .json({success: false, message: 'student already exists'});
+                  .redirect("http://localhost:3000/studentAdd.html");
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -89,13 +89,13 @@ router.post('/student/register', (req, res) => {
                      .then(student => {
                          res
                            .status(200)
-                           .json({success: true, message: 'student registered'});
+                           .redirect("http://localhost:3000/studentAdd.html");
                      })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .json({error: err});
+                          .redirect("http://localhost:3000/studentAdd.html");
                     });
 
             }
@@ -104,7 +104,7 @@ router.post('/student/register', (req, res) => {
                 console.log(err)
                 return res
                   .status(500)
-                  .json({error: err});
+                  .redirect("http://localhost:3000/studentAdd.html");
             })
     }
 });
@@ -149,23 +149,25 @@ router.post('/:studentId', (req, res) => {
     .exec()
     .then(updatedStudent => {
         if(!updatedStudent) {
-            res.status(404).json({success: false, message: 'student not found'});
+            res.status(404).redirect('http://localhost:3000/studentAdd.html');
         } else {
             console.log(updatedStudent);
-            res.status(200).json({success: true, message: 'student registered'});
+            res.status(200).redirect('http://localhost:3000/studentAdd.html');
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res
+          .status(500)
+          .redirect("http://localhost:3000/studentAdd.html");
     });
 });
 
 //Handle Delete
-router.delete('/:studentEmail', (req, res) => {
-    var email = req.params.studentEmail;
+router.delete('/:studentId', (req, res) => {
+    var id = req.params.studentId;
      //Using id provided to find one to delete
-     Student.deleteOne({ email: email })
+     Student.deleteOne({_id: id })
        .exec()
        .then(student => {
            if(!student) {

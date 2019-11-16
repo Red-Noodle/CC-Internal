@@ -49,7 +49,7 @@ router.get('/register', (req, res) => {
 });
 
 //Handle Register
-router.post('/instructor/register', (req, res) => {
+router.post('/register', (req, res) => {
         const {
           firstName,
           lastName,
@@ -65,7 +65,7 @@ router.post('/instructor/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).json({success: false, message: 'fill in name and email fields'});
+        res.status(500).end();
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
@@ -73,7 +73,7 @@ router.post('/instructor/register', (req, res) => {
                 //Instructor exists
                 res
                   .status(500)
-                  .json({success: false, message: 'instrutor already exists'});
+                  .redirect('http://localhost:3000/instructorAdd.html');
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -100,13 +100,13 @@ router.post('/instructor/register', (req, res) => {
                         //Success
                         res
                           .status(200)
-                          .json({success: true, message: 'instructor registered'});
+                          .redirect('http://localhost:8000/instructorAdd.html');
                     })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .json({error: err});
+                          .redirect('http://instructorAdd.html');
                     });
             }
         })
@@ -114,7 +114,7 @@ router.post('/instructor/register', (req, res) => {
                 console.log(err);
                 res
                   .status(500)
-                  .json({error: err});
+                  .redirect('http://localhost:3000/instructorAdd');
             });
     }
 });
@@ -161,23 +161,23 @@ router.post('/:instructorId', (req, res) => {
         if(!updatedInstructor) {
             res
               .status(404)
-              .json({success: false, message: 'instructor not found'});
+              .redirect('http://localhost:3000/instructorAdd.html');
         } else {
             res
               .status(200)
-              .json({success: true, message: 'instructor deleted'});
+              .redirect('http://localhost:3000/instructorAdd.html');
         }
     })
     .catch(err => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .redirect('http://localhost:3000/instructorAdd.html');
     });
 });
 
 //Handle deleting instructor
-router.delete('/delete/:instructorId', (req, res) => {
+router.delete('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     Instructor.deleteOne({_id: id})
     .exec()
