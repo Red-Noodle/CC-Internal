@@ -110,7 +110,7 @@ router.post('/student/register', (req, res) => {
 });
 
 //Handle Update
-router.patch('/:studentId', (req, res) => {
+router.post('/:studentId', (req, res) => {
     var id = req.params.studentId;
         //Receiving data from the request body
         const {

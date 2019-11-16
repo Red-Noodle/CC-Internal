@@ -120,7 +120,7 @@ router.post('/instructor/register', (req, res) => {
 });
 
 //Handle updating instructor
-router.post('/update/:instructorId', (req, res) => {
+router.post('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     //Receivingn data from the request body
         const {
