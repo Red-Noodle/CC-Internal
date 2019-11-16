@@ -164,7 +164,7 @@ router.post('/register', (req, res) => {
 });
 
 //Handle Logout
-router.get('/logout', (req, res) => {
+router.get('/auth/logout', (req, res) => {
     Admin.updateOne(
       { loginKey: process.env.SWOOP_KEY },
       {
@@ -189,7 +189,7 @@ router.get('/logout', (req, res) => {
 });
 
 // //Handle updating an admin
-router.patch('/:adminId', (req, res) => {
+router.post('/:adminId', (req, res) => {
     var id = req.params.adminId;
     //Finding one to update
     Admin.updateOne(
