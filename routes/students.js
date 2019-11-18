@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
       });
 });
 
@@ -34,7 +34,7 @@ router.get('/:studentId', (req, res) => {
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
       });
 });
 
@@ -55,7 +55,7 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).redirect('http://localhost:3000/studentAdd.html');
+        res.status(500).json({success: false, message: 'please fill in the name and email fields'});
     } else {
         //Check to see if student exists
         Student.findOne({email: email})
@@ -63,7 +63,7 @@ router.post('/register', (req, res) => {
             if(student) {
                 res
                   .status(500)
-                  .redirect("http://localhost:3000/studentAdd.html");
+                  .json({success: false, message: 'student already exists'});
             } else {
                 //Create new Student
                 const newStudent = new Student({
@@ -89,13 +89,13 @@ router.post('/register', (req, res) => {
                      .then(student => {
                          res
                            .status(200)
-                           .redirect("http://localhost:3000/studentAdd.html");
+                           .json({success: true, message: 'student successfully registered'});
                      })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .redirect("http://localhost:3000/studentAdd.html");
+                          .json({success: false, message: err});
                     });
 
             }
@@ -104,16 +104,16 @@ router.post('/register', (req, res) => {
                 console.log(err)
                 return res
                   .status(500)
-                  .redirect("http://localhost:3000/studentAdd.html");
+                  .json({success: false, message: err});
             })
     }
 });
 
 //Handle Update
-router.post('/:studentId', (req, res) => {
+router.put('/:studentId', (req, res) => {
     var id = req.params.studentId;
         //Receiving data from the request body
-        const {
+       var {
           firstName,
           lastName,
           email,
@@ -144,22 +144,22 @@ router.post('/:studentId', (req, res) => {
                 cohort: cohort
             }
         },
-        {upsert: true, multi: true}
+        {upsert: true}
     )
     .exec()
     .then(updatedStudent => {
         if(!updatedStudent) {
-            res.status(404).redirect('http://localhost:3000/studentAdd.html');
+            res.status(404).json({success: false, message: 'student not found'});
         } else {
             console.log(updatedStudent);
-            res.status(200).redirect('http://localhost:3000/studentAdd.html');
+            res.status(200).json({success: true, message: 'student updated'});
         }
     })
     .catch(err => {
         console.log(err);
         return res
           .status(500)
-          .redirect("http://localhost:3000/studentAdd.html");
+          .json({success: false, message: 'something went wrong'});
     });
 });
 
@@ -173,14 +173,14 @@ router.delete('/:studentId', (req, res) => {
            if(!student) {
                res.status(404).json({success: false, message: 'student not found'});
            } else {
-             return res.status(200).json({success: true, message: 'student was deleted'});
+             return res.status(200).json({success: true, message: 'student deleted'});
            }
        })
        .catch(err => {
          console.log(err);
          return res
            .status(500)
-           .json({error: err});
+           .json({success: false, message: err});
        });
 });
 

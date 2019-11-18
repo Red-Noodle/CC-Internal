@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
@@ -31,7 +31,7 @@ router.get('/:cohortId', (req, res) => {
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 })
 
@@ -84,7 +84,7 @@ router.post('/create', (req, res) => {
 });
 
 //Handle updating cohort
-router.post('/cohortId', (req, res) => {
+router.put('/cohortId', (req, res) => {
     var id = req.params.cohortId;
     var {
           name,
@@ -109,19 +109,19 @@ router.post('/cohortId', (req, res) => {
                 instructors: instructors
             }
         },
-      { upsert: true, multi: true }
+      { upsert: true }
     )
     .exec()
     .then(updatedCohort => {
         if(!updatedCohort) {
-            res.status(404).redirect("http://localhost:3000/cohortAdd.html");
+            res.status(404).json({success: false, message: 'cohort not found'});
         } else {
-            res.status(200).redirect("http://localhost:3000/cohortAdd.html");
+            res.status(200).json({success: true, message: 'cohort updated'});
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
@@ -134,12 +134,12 @@ router.delete('/:cohortId', (req, res) => {
         if(!cohort) {
             res.status(404).json({success: false, message: 'cohort not found'});
         } else {
-            res.status(200).json({success: true, message: 'cohort create'});
+            res.status(200).json({success: true, message: 'cohort deleted'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 

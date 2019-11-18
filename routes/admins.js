@@ -13,15 +13,15 @@ router.get('/key', (req, res) => {
 
 //Get all Admins
 router.get('/', (req, res) => {
-    
      Admin.find()
         .exec()
         .then(admins => {
+            //Responding with data of all admins
             res.status(200).json(admins);
         })
         .catch(err => {
             console.log(err);
-            return res.status(500).json({error: err});
+            return res.status(500).json({success: false, message: err});
         });
      
 });
@@ -29,25 +29,44 @@ router.get('/', (req, res) => {
 //Get admin by id
 router.get('/:adminId', (req, res) => {
     var id = req.params.adminId;
+    //Finding an admin by the id given
     Admin.findById(id)
     .exec()
     .then(admin => {
         if(admin) {
+            //responding with the data of the matched admin
             res.status(200).json(admin);
         } else {
-            req.flash('error', 'admin not found');
             res.status(404).json({success: false, message: 'admin not found'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
 router.get('/login', (req, res) => {
     res.render('../views/login.html');
 })
+
+//Get admin by key
+router.get('/key/:key', (req, res) => {
+    var key = req.params.key;
+    Admin.findOne({loginKey: key})
+    .exec()
+    .then(admin => {
+        if(!admin) {
+            res.status(404).json({success: false, message: 'admin not found'});
+        } else {
+            res.status(200).json(admin);
+        }
+    })
+    .catch(err => {
+        console.log(err);
+        return res.status(500).json({success: false, message: err});
+    });
+});
 
 //Swoop Login
 router.get('/login/swoop', (req, res) => {
@@ -62,8 +81,12 @@ router.get('/login/swoop', (req, res) => {
         .exec()
         .then(admin => {
             //Email auth and setting key
-            if(admin) {
+            if(!admin) {
+                res.status(404).redirect('http://localhost:3000/login.html');
+            } else {
+                //setting environment variable to key to pass along
                 process.env.SWOOP_KEY = key;
+                //updating admin with key to pass along
                 Admin.updateOne(
                   { _id: admin._id },
                   {
@@ -83,9 +106,6 @@ router.get('/login/swoop', (req, res) => {
                     res.status(200).redirect('http://localhost:3000/')
                 })
                 .catch(err => {return console.log(err)});
-            } else {
-                req.flash('error', 'admin not found');
-                res.status(404).redirect('http://localhost:3000/login.html');
             }
         })
         .catch(err => {
@@ -135,7 +155,6 @@ router.post('/register', (req, res) => {
                     })
                     .catch(err => {
                        console.log(err);
-                       req.flash('error', err)
                        return res
                          .status(500)
                          .redirect("http://localhost:3000/adminAdd.html");
@@ -151,31 +170,14 @@ router.post('/register', (req, res) => {
 
 //Handle Logout
 router.get('/auth/logout', (req, res) => {
-    Admin.updateOne(
-      { loginKey: process.env.SWOOP_KEY },
-      {
-        $set: {
-          name: {
-            firstName: admin.name.firstName,
-            lastName: admin.name.lastName
-          },
-          email: admin.email,
-          loginKey: ""
-        }
-      },
-      { upsert: true, multi: true }
-    )
-      .exec()
-      .then(updatedAdmin => {
-        res
-          .status(200)
-          .end();
-      })
-      .catch(err => console.log(err));
+    //Deleting key
+    process.env.SWOOP_KEY = "";
+    console.log(process.env.SWOOP_KEY);
+    res.status(200).json(process.env.SWOOP_KEY);
 });
 
 // //Handle updating an admin
-router.post('/:adminId', (req, res) => {
+router.put('/:adminId', (req, res) => {
     var id = req.params.adminId;
     //Finding one to update
     Admin.updateOne(
@@ -184,7 +186,7 @@ router.post('/:adminId', (req, res) => {
         $set: {
             name: { //Receiving update data from the request body
                     firstName: req.body.firstName,
-                    lastName: req.body.lastName,
+                    lastName: req.body.lastName
             },
           email: req.body.email
         }
@@ -194,16 +196,14 @@ router.post('/:adminId', (req, res) => {
     .exec()
     .then(updatedAdmin => {
         if (!updatedAdmin) {
-            req.flash('error', 'admin not found');
-          res.status(404).redirect('http://localhost:3000/adminAdd.html');
+          res.status(404).json({success: false, message: 'admin not found'});
         } else {
-          req.flash("success", 'admin updated');
-          res.status(200).redirect('http://localhost:3000/adminAdd.html');
+          res.status(200).json({success: true, message: 'admin updated'});
         }
       })
       .catch(err => {
         console.log(err);
-        return res.status(500).redirect('http://localhost:3000/adminAdd.html');
+        return res.status(500).json({success: false, message: err});
       });
 });
 
@@ -215,16 +215,14 @@ router.delete('/:adminId', (req, res) => {
     .exec()
     .then(admin => {
         if(!admin) {
-            req.flash('error', 'admin not found');
             res.status(404).json({success: false, message: 'admin not found'});
         } else {
-            req.flash('success', 'admin was deleted');
             res.status(200).json({success: true, message: 'admin was deleted'});
         }
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 

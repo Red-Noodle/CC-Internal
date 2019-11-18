@@ -7,14 +7,14 @@ const Instructor = require('../models/Instructor');
 //Get all instructors
 router.get('/', (req, res) => {
     Instructor.find()
-    .populate('cohort', 'name')
+    .populate('cohort')
     .exec()
     .then(instructors => {
         res.status(200).json(instructors);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({succes: false, message: err});
     });
 });
 
@@ -35,7 +35,7 @@ router.get('/:instructorId', (req, res) => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .json({success: false, message: err});
     });
 });
 
@@ -100,13 +100,13 @@ router.post('/register', (req, res) => {
                         //Success
                         res
                           .status(200)
-                          .redirect('http://localhost:8000/instructorAdd.html');
+                          .redirect('http://localhost:3000/instructorAdd.html');
                     })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .redirect('http://instructorAdd.html');
+                          .redirect("http://localhost:3000/instructorAdd.html");
                     });
             }
         })
@@ -114,13 +114,13 @@ router.post('/register', (req, res) => {
                 console.log(err);
                 res
                   .status(500)
-                  .redirect('http://localhost:3000/instructorAdd');
+                  .redirect('http://localhost:3000/instructorAdd.html');
             });
     }
 });
 
 //Handle updating instructor
-router.post('/:instructorId', (req, res) => {
+router.put('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     //Receivingn data from the request body
         const {
@@ -154,25 +154,25 @@ router.post('/:instructorId', (req, res) => {
                 cohort: cohort
             }
         },
-        {upsert: true, multi: true}
+        {upsert: true}
     )
     .exec()
     .then(updatedInstructor => {
         if(!updatedInstructor) {
             res
               .status(404)
-              .redirect('http://localhost:3000/instructorAdd.html');
+              .json({success: false, message: 'instructor not found'});
         } else {
             res
               .status(200)
-              .redirect('http://localhost:3000/instructorAdd.html');
+              .json({success: true, message: 'instructor updated'});
         }
     })
     .catch(err => {
         console.log(err);
         return res
           .status(500)
-          .redirect('http://localhost:3000/instructorAdd.html');
+          .json({success: false, message: 'something went wrong'});
     });
 });
 
@@ -196,7 +196,7 @@ router.delete('/:instructorId', (req, res) => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .json({success: false, message: err});
     });
 });
 
