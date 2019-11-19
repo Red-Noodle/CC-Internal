@@ -17,7 +17,7 @@ const studentSchema = new Schema({
             zip: {type: String, trim: true, default: ""}
     },
     phone: {type: String, trim: true, default: ""},
-    cohort: { type: mongoose.Types.ObjectId, ref: 'Cohort' }
+    cohort: { type: mongoose.Types.ObjectId, ref: 'Cohort'}
 });
 
 const Student = mongoose.model("Student", studentSchema); 

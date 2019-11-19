@@ -7,14 +7,14 @@ const Instructor = require('../models/Instructor');
 //Get all instructors
 router.get('/', (req, res) => {
     Instructor.find()
-    .populate('cohort', 'name')
+    .populate('cohort')
     .exec()
     .then(instructors => {
         res.status(200).json(instructors);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({succes: false, message: err});
     });
 });
 
@@ -35,7 +35,7 @@ router.get('/:instructorId', (req, res) => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .json({success: false, message: err});
     });
 });
 
@@ -49,7 +49,7 @@ router.get('/register', (req, res) => {
 });
 
 //Handle Register
-router.post('/instructor/register', (req, res) => {
+router.post('/register', (req, res) => {
         const {
           firstName,
           lastName,
@@ -65,7 +65,7 @@ router.post('/instructor/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).json({success: false, message: 'fill in name and email fields'});
+        res.status(500).json({success: false, message: 'please fill in name and email fields'});
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
@@ -73,7 +73,7 @@ router.post('/instructor/register', (req, res) => {
                 //Instructor exists
                 res
                   .status(500)
-                  .json({success: false, message: 'instrutor already exists'});
+                  .json({sucess: false, message: 'instructor already exists'});
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -92,8 +92,7 @@ router.post('/instructor/register', (req, res) => {
                     phone: phone,
                     cohort: cohort
                 });
-
-
+ 
                 //Saving Instructor
                 newInstructor.save()
                     .then(instructor => {
@@ -106,7 +105,7 @@ router.post('/instructor/register', (req, res) => {
                         console.log(err);
                         return res
                           .status(500)
-                          .json({error: err});
+                          .json({success: false, message: err});
                     });
             }
         })
@@ -114,13 +113,13 @@ router.post('/instructor/register', (req, res) => {
                 console.log(err);
                 res
                   .status(500)
-                  .json({error: err});
+                  .json({success: false, message: err});
             });
     }
 });
 
 //Handle updating instructor
-router.post('/:instructorId', (req, res) => {
+router.put('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     //Receivingn data from the request body
         const {
@@ -154,7 +153,7 @@ router.post('/:instructorId', (req, res) => {
                 cohort: cohort
             }
         },
-        {upsert: true, multi: true}
+        {upsert: true}
     )
     .exec()
     .then(updatedInstructor => {
@@ -165,19 +164,19 @@ router.post('/:instructorId', (req, res) => {
         } else {
             res
               .status(200)
-              .json({success: true, message: 'instructor deleted'});
+              .json({success: true, message: 'instructor updated'});
         }
     })
     .catch(err => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .json({success: false, message: 'something went wrong'});
     });
 });
 
 //Handle deleting instructor
-router.delete('/delete/:instructorId', (req, res) => {
+router.delete('/:instructorId', (req, res) => {
     var id = req.params.instructorId;
     Instructor.deleteOne({_id: id})
     .exec()
@@ -196,7 +195,7 @@ router.delete('/delete/:instructorId', (req, res) => {
         console.log(err);
         return res
           .status(500)
-          .json({error: err});
+          .json({success: false, message: err});
     });
 });
 

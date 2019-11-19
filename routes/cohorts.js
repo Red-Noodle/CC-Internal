@@ -7,15 +7,13 @@ const Cohort = require('../models/Cohort');
 //Get all cohorts
 router.get('/', (req, res) => {
     Cohort.find()
-    .populate('students')
-    .populate('instructors')
     .exec()
     .then(cohorts => {
         res.status(200).json(cohorts);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
@@ -23,74 +21,67 @@ router.get('/', (req, res) => {
 router.get('/:cohortId', (req, res) => {
     var id = req.params.cohortId;
     Cohort.findById({_id: id})
-    .populate('students')
-    .populate('instructors')
     .exec()
     .then(cohort => {
         res.status(200).json(cohort);
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 })
 
 //Create Page
-router.get('/cohort/create', (req, res) => {
+router.get('/create', (req, res) => {
     
 });
 
 //Handle Cohort Creation
-router.post('/cohort/create', (req, res) => {
+router.post('/create', (req, res) => {
     var {
       name,
-      dateStart,
-      dateEnd,
-      students,
-      instructors,
+      startDate,
+      endDate,
       city,
       state,
     } = req.body;
 
     //Check required fields
     if(!name) {
-        res.status(500).json({success: false, message: 'please fill in the name field'});
+        res.status(500).json({success: false, message: 'please enter a name'});
     }
 
     //Creating a new Cohort
     const newCohort = new Cohort({
         name: name,
-        dateStart: dateStart,
-        dateEnd: dateEnd,
+        startDate: startDate,
+        endDate: endDate,
         location: {
             city: city,
             state: state
-        },
-        students: students,
-        instructors: instructors
+        }
     });
 
     //Saving new Cohort
     newCohort.save()
     .then(cohort => {
-        req.flash('success', 'cohort created');
         res.status(200).json({success: true, message: 'cohort created'});
     })
     .catch(err => {
         console.log(err);
-         return res.status(500).json({error: err});
+         return res
+           .status(500)
+           .json({success: false, message: err});
     });
 });
 
 //Handle updating cohort
-router.post('/cohortId', (req, res) => {
+router.put('/:cohortId', (req, res) => {
     var id = req.params.cohortId;
     var {
           name,
-          dateStart,
-          dateEnd,
-          students,
-          instructors,
+          startDate,
+          endDate,
           city,
           state,
         } = req.body;
@@ -98,17 +89,15 @@ router.post('/cohortId', (req, res) => {
         {
             $set: {
                 name: name,
-                dateStart: dateStart,
-                dateEnd: dateEnd,
+                startDate: startDate,
+                endDate: endDate,
                 location: {
                     city: city,
                     state: state
-                },
-                students: students,
-                instructors: instructors
+                }
             }
         },
-      { upsert: true, multi: true }
+      { upsert: true }
     )
     .exec()
     .then(updatedCohort => {
@@ -120,7 +109,7 @@ router.post('/cohortId', (req, res) => {
     })
     .catch( err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
@@ -133,12 +122,12 @@ router.delete('/:cohortId', (req, res) => {
         if(!cohort) {
             res.status(404).json({success: false, message: 'cohort not found'});
         } else {
-            res.status(200).json({success: true, message: 'cohort create'});
+            res.status(200).json({success: true, message: 'cohort deleted'});
         }
     })
     .catch(err => {
         console.log(err);
-        return res.status(500).json({error: err});
+        return res.status(500).json({success: false, message: err});
     });
 });
 
