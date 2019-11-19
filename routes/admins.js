@@ -172,7 +172,6 @@ router.post('/register', (req, res) => {
 router.get('/auth/logout', (req, res) => {
     //Deleting key
     process.env.SWOOP_KEY = "";
-    console.log(process.env.SWOOP_KEY);
     res.status(200).json(process.env.SWOOP_KEY);
 });
 

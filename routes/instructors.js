@@ -65,7 +65,7 @@ router.post('/register', (req, res) => {
 
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).end();
+        res.status(500).json({success: false, message: 'please fill in name and email fields'});
     } else {
         Instructor.findOne({email: email})
         .then(instructor => {
@@ -73,7 +73,7 @@ router.post('/register', (req, res) => {
                 //Instructor exists
                 res
                   .status(500)
-                  .redirect('http://localhost:3000/instructorAdd.html');
+                  .json({sucess: false, message: 'instructor already exists'});
             } else {
                 //Create new Instructor
                 const newInstructor = new Instructor({
@@ -92,21 +92,20 @@ router.post('/register', (req, res) => {
                     phone: phone,
                     cohort: cohort
                 });
-
-
+ 
                 //Saving Instructor
                 newInstructor.save()
                     .then(instructor => {
                         //Success
                         res
                           .status(200)
-                          .redirect('http://localhost:3000/instructorAdd.html');
+                          .json({success: true, message: 'instructor registered'});
                     })
                     .catch(err => {
                         console.log(err);
                         return res
                           .status(500)
-                          .redirect("http://localhost:3000/instructorAdd.html");
+                          .json({success: false, message: err});
                     });
             }
         })
@@ -114,7 +113,7 @@ router.post('/register', (req, res) => {
                 console.log(err);
                 res
                   .status(500)
-                  .redirect('http://localhost:3000/instructorAdd.html');
+                  .json({success: false, message: err});
             });
     }
 });

@@ -151,7 +151,6 @@ router.put('/:studentId', (req, res) => {
         if(!updatedStudent) {
             res.status(404).json({success: false, message: 'student not found'});
         } else {
-            console.log(updatedStudent);
             res.status(200).json({success: true, message: 'student updated'});
         }
     })
