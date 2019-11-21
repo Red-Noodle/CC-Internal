@@ -9,7 +9,7 @@ const Admin = require('../models/Admin');
 //Get Key
 router.get('/key', (req, res) => {
     if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
-        res.sendStatus(404);
+        res.status(404).json({success: false});
     } else {
     res.status(200).json(process.env.SWOOP_KEY);
     }
