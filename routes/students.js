@@ -6,7 +6,9 @@ const Student = require('../models/Student');
 
 //Get all studentss
 router.get('/', (req, res) => {
-  var key = req.headers.key;
+  if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     Student.find()
       .populate("cohort")
       .exec()
@@ -17,10 +19,14 @@ router.get('/', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
       });
+    }
 });
 
 // Get a student by id
 router.get('/:studentId', (req, res) => {
+  if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.studentId;
     Student.findById({ _id: id })
       .populate("cohort")
@@ -36,16 +42,19 @@ router.get('/:studentId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
       });
+    }
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
+  if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     const {
       firstName,
       lastName,
       email,
       street,
-      street2,
       city,
       state,
       zip,
@@ -74,7 +83,6 @@ router.post('/register', (req, res) => {
                     email: email,
                     address: {
                         street: street,
-                        street2: street2,
                         city: city,
                         state: state,
                         zip: zip
@@ -105,12 +113,16 @@ router.post('/register', (req, res) => {
                 return res
                   .status(500)
                   .json({success: false, message: err});
-            })
+            });
     }
+  }
 });
 
 //Handle Update
 router.put('/:studentId', (req, res) => {
+  if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.studentId;
         //Receiving data from the request body
        var {
@@ -118,7 +130,6 @@ router.put('/:studentId', (req, res) => {
           lastName,
           email,
           street,
-          street2,
           city,
           state,
           zip,
@@ -135,7 +146,6 @@ router.put('/:studentId', (req, res) => {
                 email: email,
                 address: {
                     street: street,
-                    street2: street2,
                     city: city,
                     state: state,
                     zip: zip
@@ -144,7 +154,7 @@ router.put('/:studentId', (req, res) => {
                 cohort: cohort
             }
         },
-        {upsert: true}
+        {upsert: true, multi: true}
     )
     .exec()
     .then(updatedStudent => {
@@ -160,10 +170,14 @@ router.put('/:studentId', (req, res) => {
           .status(500)
           .json({success: false, message: 'something went wrong'});
     });
+  }
 });
 
 //Handle Delete
 router.delete('/:studentId', (req, res) => {
+  if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.studentId;
      //Using id provided to find one to delete
      Student.deleteOne({_id: id })
@@ -181,6 +195,7 @@ router.delete('/:studentId', (req, res) => {
            .status(500)
            .json({success: false, message: err});
        });
+      }
 });
 
 module.exports = router;
