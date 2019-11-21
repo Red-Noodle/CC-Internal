@@ -6,6 +6,9 @@ const Instructor = require('../models/Instructor');
 
 //Get all instructors
 router.get('/', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     Instructor.find()
     .populate('cohort')
     .exec()
@@ -16,10 +19,14 @@ router.get('/', (req, res) => {
         console.log(err);
         return res.status(500).json({succes: false, message: err});
     });
+}
 });
 
 //Get instructor by id
 router.get('/:instructorId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.instructorId;
     Instructor.findById({_id: id})
     .populate('cohort')
@@ -37,25 +44,38 @@ router.get('/:instructorId', (req, res) => {
           .status(500)
           .json({success: false, message: err});
     });
+}
 });
 
 //Login Page
 router.get('/login', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        //do stuff
+    }
    
 });
 
 //Register Page
 router.get('/register', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        //do stuff
+    }
 });
 
 //Handle Register
 router.post('/register', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
         const {
           firstName,
           lastName,
           email,
           street,
-          street2,
           city,
           state,
           zip,
@@ -84,7 +104,6 @@ router.post('/register', (req, res) => {
                     email: email,
                     address: {
                         street: street,
-                        street2: street2,
                         city: city,
                         state: state,
                         zip: zip
@@ -116,10 +135,14 @@ router.post('/register', (req, res) => {
                   .json({success: false, message: err});
             });
     }
+}
 });
 
 //Handle updating instructor
 router.put('/:instructorId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.instructorId;
     //Receivingn data from the request body
         const {
@@ -127,7 +150,6 @@ router.put('/:instructorId', (req, res) => {
           lastName,
           email,
           street,
-          street2,
           city,
           state,
           zip,
@@ -144,7 +166,6 @@ router.put('/:instructorId', (req, res) => {
                 email: email,
                 address: {
                     street: street,
-                    street2: street2,
                     city: city,
                     state: state,
                     zip: zip
@@ -153,7 +174,7 @@ router.put('/:instructorId', (req, res) => {
                 cohort: cohort
             }
         },
-        {upsert: true}
+        {upsert: true, multi: true}
     )
     .exec()
     .then(updatedInstructor => {
@@ -173,10 +194,14 @@ router.put('/:instructorId', (req, res) => {
           .status(500)
           .json({success: false, message: 'something went wrong'});
     });
+}
 });
 
 //Handle deleting instructor
 router.delete('/:instructorId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.instructorId;
     Instructor.deleteOne({_id: id})
     .exec()
@@ -197,6 +222,7 @@ router.delete('/:instructorId', (req, res) => {
           .status(500)
           .json({success: false, message: err});
     });
+}
 });
 
 module.exports = router;

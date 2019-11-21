@@ -6,6 +6,9 @@ const Cohort = require('../models/Cohort');
 
 //Get all cohorts
 router.get('/', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     Cohort.find()
     .exec()
     .then(cohorts => {
@@ -15,10 +18,14 @@ router.get('/', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+    }
 });
 
 //Get a cohort by id
 router.get('/:cohortId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.cohortId;
     Cohort.findById({_id: id})
     .exec()
@@ -29,15 +36,23 @@ router.get('/:cohortId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+    }
 })
 
 //Create Page
 router.get('/create', (req, res) => {
-    
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        //do stuff
+    }
 });
 
 //Handle Cohort Creation
 router.post('/create', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var {
       name,
       startDate,
@@ -73,10 +88,14 @@ router.post('/create', (req, res) => {
            .status(500)
            .json({success: false, message: err});
     });
+}
 });
 
 //Handle updating cohort
 router.put('/:cohortId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.cohortId;
     var {
           name,
@@ -97,7 +116,7 @@ router.put('/:cohortId', (req, res) => {
                 }
             }
         },
-      { upsert: true }
+      { upsert: true, multi: true }
     )
     .exec()
     .then(updatedCohort => {
@@ -111,10 +130,14 @@ router.put('/:cohortId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+}
 });
 
 //Handle deleting cohort
 router.delete('/:cohortId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.cohortId;
     Cohort.deleteOne({_id: id})
     .exec()
@@ -129,6 +152,7 @@ router.delete('/:cohortId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+}
 });
 
 module.exports = router;

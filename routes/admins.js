@@ -8,11 +8,18 @@ const Admin = require('../models/Admin');
 
 //Get Key
 router.get('/key', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     res.status(200).json(process.env.SWOOP_KEY);
+    }
 });
 
 //Get all Admins
 router.get('/', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
      Admin.find()
         .exec()
         .then(admins => {
@@ -23,11 +30,15 @@ router.get('/', (req, res) => {
             console.log(err);
             return res.status(500).json({success: false, message: err});
         });
+    }
      
 });
 
 //Get admin by id
 router.get('/:adminId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.adminId;
     //Finding an admin by the id given
     Admin.findById(id)
@@ -44,14 +55,22 @@ router.get('/:adminId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+}
 });
 
 router.get('/login', (req, res) => {
-    res.render('../views/login.html');
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        //do stuff
+    }
 })
 
 //Get admin by key
 router.get('/key/:key', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var key = req.params.key;
     Admin.findOne({loginKey: key})
     .exec()
@@ -66,6 +85,7 @@ router.get('/key/:key', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+}
 });
 
 //Swoop Login
@@ -121,23 +141,31 @@ router.get('/login/swoop', (req, res) => {
 
 //Register Page
 router.get('/register', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        //do stuff
+    }
 
 });
 
 //Handle Register
-router.post('/register', (req, res) => {
+router.post('/auth/register', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     //Define variables from request body
     var { firstName, lastName, email } = req.body;
     //Check required fields
     if (!firstName || !lastName || !email) {
-        res.status(500).redirect('http://localhost:3000/adminAdd.html');
+        res.status(500).json({success: false, message: 'please fill in all fields'});
     } else {
         // checking if admin already exists
        Admin.findOne({email: email})
        .then(admin => {
            if(admin) {
                // sending a message if admin does exist
-               res.status(500).redirect('http://localhost:3000/adminAdd.html');
+               res.status(500).json({success: false, message: 'admin already exists'});
            } else {
                //create new admin if one wasn't found
                newAdmin = new Admin({
@@ -151,32 +179,40 @@ router.post('/register', (req, res) => {
                     .then(admin => {
                         return res
                           .status(200)
-                          .redirect("http://localhost:3000/adminAdd.html");
+                          .json({success: true, message: 'admin registered'});
                     })
                     .catch(err => {
                        console.log(err);
                        return res
                          .status(500)
-                         .redirect("http://localhost:3000/adminAdd.html");
+                         .json({success: false, message: err});
                    });
            }
        })
        .catch(err => {
            console.log(err);
-           return res.status(500).redirect('http://localhost:3000/adminAdd.html');
+           return res.status(500).json({success: false, message: err});
       });
     }
+}
 });
 
 //Handle Logout
 router.get('/auth/logout', (req, res) => {
-    //Deleting key
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+    //reseting key
     process.env.SWOOP_KEY = "";
-    res.status(200).json(process.env.SWOOP_KEY);
+    res.status(200).json({success: true, message: 'successfully logged out'});
+    }
 });
 
 // //Handle updating an admin
 router.put('/:adminId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.adminId;
     //Finding one to update
     Admin.updateOne(
@@ -204,10 +240,14 @@ router.put('/:adminId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
       });
+    }
 });
 
 // //Handle deleting an admin
 router.delete('/:adminId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
     var id = req.params.adminId;
     //Using id provided to find one to delete
     Admin.deleteOne({_id: id})
@@ -223,6 +263,7 @@ router.delete('/:adminId', (req, res) => {
         console.log(err);
         return res.status(500).json({success: false, message: err});
     });
+}
 });
 
 module.exports = router;

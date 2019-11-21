@@ -40,6 +40,7 @@ app.use(flash());
 // Use Cors
 app.use(cors());
 
+// Setting headers
 app.use((req, res, next) =>{
   res.header('key', '');
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
