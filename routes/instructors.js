@@ -47,6 +47,28 @@ router.get('/:instructorId', (req, res) => {
 }
 });
 
+//Get instructors by cohort id
+router.get('/cohorts/:cohortId', (req, res) => {
+    if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
+        res.sendStatus(404);
+    } else {
+        var id = req.params.cohortId;
+        Instructor.find({cohort:{_id: id}})
+        .exec()
+        .then(instructors => {
+            if(!instructors) {
+                res.status(404).json({success: false, message: 'instructor not found'});
+            } else {
+                res.status(200).json(instructors);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            return res.status(500).json({success: false, message: err});
+        });
+    }
+});
+
 //Login Page
 router.get('/login', (req, res) => {
     if(process.env.SWOOP_KEY == "" || !process.env.SWOOP_KEY) {
