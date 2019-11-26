@@ -1,28 +1,33 @@
-const express = require('express');
-const path = require('path');
-const passport = require('passport');
-const Strategy = require('passport-local').Stretegy;
-const session = require('express-session');
-const flash = require('connect-flash');
-const mongoose = require('mongoose');
-const dotenv = require('dotenv').config();
-const cors = require('cors');
+const express = require("express");
+const path = require("path");
+const passport = require("passport");
+const Strategy = require("passport-local").Stretegy;
+const session = require("express-session");
+const flash = require("connect-flash");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv").config();
+const cors = require("cors");
 
 const app = express();
 
-
 // DB connection
-mongoose.connect('mongodb://localhost/cc_admin', { useUnifiedTopology: true, useNewUrlParser: true })
-.then(() => console.log('DB connected...'))
-.catch((err) => {console.log(err)});
+mongoose
+  .connect("mongodb://localhost/cc_admin", {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+  })
+  .then(() => console.log("DB connected..."))
+  .catch(err => {
+    console.log(err);
+  });
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.engine('html', require('ejs').renderFile);
-app.set('view engine', 'html');
+app.set("views", path.join(__dirname, "views"));
+app.engine("html", require("ejs").renderFile);
+app.set("view engine", "html");
 
 // Express bodyparser
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Express Session
@@ -41,23 +46,26 @@ app.use(flash());
 app.use(cors());
 
 // Setting headers
-app.use((req, res, next) =>{
-  res.header('key', '');
+app.use((req, res, next) => {
+  res.header("key", "");
   res.header("Access-Control-Allow-Origin", "http://localhost:3000");
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Credentials', 'true')
-  if(req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'PUT, POST, PATCH, DELETE, GET');
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET");
   }
   next();
 });
 
 // Routes
-app.use('/', require('./routes/index'));
-app.use('/students', require('./routes/students'));
-app.use('/instructors', require('./routes/instructors'));
-app.use('/cohorts', require('./routes/cohorts'));
-app.use('/admins', require('./routes/admins'));
+app.use("/", require("./routes/index"));
+app.use("/students", require("./routes/students"));
+app.use("/instructors", require("./routes/instructors"));
+app.use("/cohorts", require("./routes/cohorts"));
+app.use("/admins", require("./routes/admins"));
 
 const PORT = process.env.PORT || 5000;
 
