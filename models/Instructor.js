@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 //Cohort Model
-const Cohort = require('./Cohort');
+const Cohort = require("./Cohort");
 
 //Instructor schema defined
 const instructorSchema = new Schema({
@@ -18,7 +18,7 @@ const instructorSchema = new Schema({
     zip: { type: String, trim: true, default: "" }
   },
   phone: { type: String, trim: true, default: "" },
-  cohort: [{ type: mongoose.Types.ObjectId, ref: "Cohort"}]
+  cohort: [{ type: mongoose.Types.ObjectId, ref: "Cohort" }]
 });
 
 //Student schema set to a model
